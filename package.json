@@ -1,0 +1,19 @@
+{
+  "name": "esprint",
+  "version": "0.1.0",
+  "description": "Parallelized eslint",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arthuralee/esprint.git"
+  },
+  "author": "Arthur Lee <arthur@arthurlee.me>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/arthuralee/esprint/issues"
+  },
+  "homepage": "https://github.com/arthuralee/esprint#readme"
+}
