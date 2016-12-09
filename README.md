@@ -1,0 +1,2 @@
+# esprint
+Parallelized eslint
