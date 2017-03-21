@@ -35,7 +35,7 @@ export default class Server {
         setInterval(
           () => {
             if (filesToProcess > 0) {
-              console.log(`Linting... ${filesToProcess} left`);
+              // console.log(`Linting... ${filesToProcess} left`);
             } else {
               cb(getResultsFromCache());
             }
