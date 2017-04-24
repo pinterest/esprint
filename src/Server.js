@@ -4,7 +4,7 @@ import WatchmanClient from './WatchmanClient';
 import { run as runLint } from './LintRunner';
 const CLIEngine = require('eslint').CLIEngine;
 
-const ROOT_DIR = '/Users/arthur/code/pinboard/webapp';
+const ROOT_DIR = process.cwd();
 const cache = {};
 let filesToProcess = 0;
 
@@ -24,28 +24,26 @@ function getResultsFromCache() {
 }
 
 export default class Server {
-  constructor() {
+  constructor(port, numWorkers, pathsToLint) {
+    this.port = port;
+    this.numWorkers = numWorkers;
+    this.pathsToLint = pathsToLint;
+
     this._setupWatcher(WatchmanClient);
+
     const server = dnode({
       status: (param, cb) => {
         if (filesToProcess === 0) {
           return cb(getResultsFromCache());
         }
 
-        setInterval(
-          () => {
-            if (filesToProcess > 0) {
-              // console.log(`Linting... ${filesToProcess} left`);
-            } else {
-              cb(getResultsFromCache());
-            }
-          },
-          1000
-        );
+        process.send({filesToProcess: filesToProcess});
       }
     });
-    server.listen(5004);
+
+    server.listen(this.port);
   }
+
   _setupWatcher(Client) {
     const client = new Client();
     client.watch({
@@ -69,23 +67,3 @@ export default class Server {
     });
   }
 }
-
-// setInterval(
-//   () => {
-//     if (filesToProcess > 0) {
-//       console.log(`Linting... ${filesToProcess} left`);
-//     } else {
-//       const results = [];
-//       Object.keys(cache).forEach(filepath => {
-//         if (
-//           cache[filepath] &&
-//           (cache[filepath].errorCount > 0 || cache[filepath].warningCount > 0)
-//         ) {
-//           results.push(cache[filepath]);
-//         }
-//       });
-//       prettyPrintResults(results);
-//     }
-//   },
-//   5000
-// );
