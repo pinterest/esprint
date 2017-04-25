@@ -7,4 +7,6 @@ if (args.length === 2) {
   args.push(process.cwd());
 }
 
+process.send({serverArgs: args});
+
 const server = new Server(args[0], args[1], args[2]);

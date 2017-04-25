@@ -11,6 +11,7 @@ function prettyPrintResults(results) {
 export default class Client {
   constructor(port) {
     this.port = port;
+    this.completedFullRun = false;
   }
 
   connect() {
@@ -18,8 +19,12 @@ export default class Client {
     d.on('remote', function(remote) {
       setInterval(() => {
         remote.status('', results => {
-          console.log(results);
-          prettyPrintResults(results);
+          if (results.length && !this.completedFullRun) {
+            this.completedFullRun = true;
+            prettyPrintResults(results);
+          } else {
+            return;
+          }
         });
       }, 1000);
     });

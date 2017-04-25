@@ -1,6 +1,8 @@
 import dnode from 'dnode';
 import path from 'path';
 import WatchmanClient from './WatchmanClient';
+import sane from 'sane';
+import glob from 'glob';
 import { run as runLint } from './LintRunner';
 const CLIEngine = require('eslint').CLIEngine;
 
@@ -10,7 +12,7 @@ let filesToProcess = 0;
 
 const eslint = new CLIEngine({ cwd: ROOT_DIR });
 
-function getResultsFromCache() {
+const getResultsFromCache = () => {
   const results = [];
   Object.keys(cache).forEach(filepath => {
     if (
@@ -23,13 +25,38 @@ function getResultsFromCache() {
   return results;
 }
 
+const lintFile = (file) => {
+  process.send({file: file});
+  if (eslint.isPathIgnored(path.join(ROOT_DIR, file))) {
+    return;
+  }
+  filesToProcess++;
+  runLint({ cwd: ROOT_DIR }, [file])
+    .then(function(results) {
+      const result = results[0];
+      if (result) {
+        delete result.source;
+        cache[result.filePath] = result;
+      }
+      filesToProcess--;
+    })
+    .catch(e => console.error(e));
+}
+
+const lintAllFiles = (files) => {
+  files.map((file, _) => {
+    lintFile(file);
+  });
+}
+
 export default class Server {
   constructor(port, numWorkers, pathsToLint) {
     this.port = port;
     this.numWorkers = numWorkers;
     this.pathsToLint = pathsToLint;
 
-    this._setupWatcher(WatchmanClient);
+    // this._setupWatcher(WatchmanClient);
+    this._setupSaneWatcher();
 
     const server = dnode({
       status: (param, cb) => {
@@ -41,6 +68,8 @@ export default class Server {
       }
     });
 
+    process.send({server: server})
+
     server.listen(this.port);
   }
 
@@ -49,21 +78,33 @@ export default class Server {
     client.watch({
       dir: ROOT_DIR,
       onChange: changedFile => {
-        if (eslint.isPathIgnored(path.join(ROOT_DIR, changedFile.name))) {
-          return;
-        }
-        filesToProcess++;
-        runLint({ cwd: ROOT_DIR }, [changedFile.name])
-          .then(function(results) {
-            const result = results[0];
-            if (result) {
-              delete result.source;
-              cache[result.filePath] = result;
-            }
-            filesToProcess--;
-          })
-          .catch(e => console.error(e));
+        lintFile(changedFile);
       }
+    });
+  }
+
+  _setupSaneWatcher() {
+    // const glob = getFullFileNames(this.pathsToLint);
+    const watcher = sane(process.cwd(), {
+      glob: 'app/**/*.js',
+      ignored: [/node_modules/],
+      dot: true,
+      watchman: true,
+    });
+
+    watcher.on('ready', () => {
+      glob(watcher.globs[0], {}, (err, files) => {
+        if (files) {
+          lintAllFiles(files);
+        }
+      });
+    });
+    watcher.on('change', (filepath, root, stat) => {
+      process.send({fileChanged: filepath});
+      lintFile(filePath);
+    });
+    watcher.on('add', (filepath, root, stat) => {
+      lintFile(filePath);
     });
   }
 }

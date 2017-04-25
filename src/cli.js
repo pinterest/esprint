@@ -54,7 +54,7 @@ const connect = (options) => {
 
       child.on('message', message => {
         console.log(message);
-        if (message) {
+        if (message.server) {
           // Wait for the server to start before connecting
           client.connect();
         }
