@@ -9,9 +9,6 @@ const DEFAULT_PORT_NUMBER = 5004;
 // TODO(allenk): See if this does anything
 const DEFAULT_NUM_WORKERS = 4;
 
-// TODO(allenk): This is less than ideal right now since we take in args from the main process
-// Just to pass them back through the server and client
-
 const start = () => {
   const usage = `Spins up a server on a specified port to run eslint in parallel.
     Usage: esprint [args]`;

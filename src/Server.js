@@ -81,7 +81,7 @@ export default class Server {
 
     watcher.on('ready', () => {
       glob(watcher.globs[0], {}, (err, files) => {
-        lineAllFiles(files);
+        lintAllFiles(files);
       });
     });
     watcher.on('change', (filepath, root, stat) => {
