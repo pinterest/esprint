@@ -1,6 +1,5 @@
 import dnode from 'dnode';
 import path from 'path';
-import WatchmanClient from './WatchmanClient';
 import sane from 'sane';
 import glob from 'glob';
 import { run as runLint } from './LintRunner';
@@ -55,7 +54,6 @@ export default class Server {
     this.numWorkers = numWorkers;
     this.pathsToLint = pathsToLint;
 
-    // this._setupWatcher(WatchmanClient);
     this._setupSaneWatcher();
 
     const server = dnode({
@@ -73,18 +71,7 @@ export default class Server {
     server.listen(this.port);
   }
 
-  _setupWatcher(Client) {
-    const client = new Client();
-    client.watch({
-      dir: ROOT_DIR,
-      onChange: changedFile => {
-        lintFile(changedFile);
-      }
-    });
-  }
-
   _setupSaneWatcher() {
-    // const glob = getFullFileNames(this.pathsToLint);
     const watcher = sane(process.cwd(), {
       glob: 'app/**/*.js',
       ignored: [/node_modules/],
@@ -94,17 +81,15 @@ export default class Server {
 
     watcher.on('ready', () => {
       glob(watcher.globs[0], {}, (err, files) => {
-        if (files) {
-          lintAllFiles(files);
-        }
+        lineAllFiles(files);
       });
     });
     watcher.on('change', (filepath, root, stat) => {
       process.send({fileChanged: filepath});
-      lintFile(filePath);
+      lintFile(filepath);
     });
     watcher.on('add', (filepath, root, stat) => {
-      lintFile(filePath);
+      lintFile(filepath);
     });
   }
 }
