@@ -19,9 +19,12 @@ export default class Client {
     d.on('remote', function(remote) {
       setInterval(() => {
         remote.status('', results => {
+          // TODO(allenk): make the results more robust, and invalidate full runs from the server
           if (results.length && !this.completedFullRun) {
             this.completedFullRun = true;
             prettyPrintResults(results);
+            d.end();
+            process.exit(0);
           } else {
             return;
           }

@@ -25,7 +25,6 @@ const getResultsFromCache = () => {
 }
 
 const lintFile = (file) => {
-  process.send({file: file});
   if (eslint.isPathIgnored(path.join(ROOT_DIR, file))) {
     return;
   }
@@ -72,6 +71,7 @@ export default class Server {
   }
 
   _setupSaneWatcher() {
+    // TODO(allenk): Fix the glob to come from a top-level .esprintrc file
     const watcher = sane(process.cwd(), {
       glob: 'app/**/*.js',
       ignored: [/node_modules/],
@@ -85,7 +85,7 @@ export default class Server {
       });
     });
     watcher.on('change', (filepath, root, stat) => {
-      process.send({fileChanged: filepath});
+      //TODO(allenk): Check for .eslintrc changes, invalidate the cache, and lint all files again
       lintFile(filepath);
     });
     watcher.on('add', (filepath, root, stat) => {
