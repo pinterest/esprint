@@ -17,7 +17,6 @@ function run(config, files) {
   // files.forEach(function(file) {
   //   workerToFile[hash(file)].push(file);
   // });
-
   return Promise.all(
     files.map((file, index) => {
       return workersPromise({

@@ -1,16 +1,17 @@
 import dnode from 'dnode';
 import path from 'path';
-import WatchmanClient from './WatchmanClient';
+import sane from 'sane';
+import glob from 'glob';
 import { run as runLint } from './LintRunner';
 const CLIEngine = require('eslint').CLIEngine;
 
-const ROOT_DIR = '/Users/arthur/code/pinboard/webapp';
+const ROOT_DIR = process.cwd();
 const cache = {};
 let filesToProcess = 0;
 
 const eslint = new CLIEngine({ cwd: ROOT_DIR });
 
-function getResultsFromCache() {
+const getResultsFromCache = () => {
   const results = [];
   Object.keys(cache).forEach(filepath => {
     if (
@@ -23,69 +24,72 @@ function getResultsFromCache() {
   return results;
 }
 
+const lintFile = (file) => {
+  if (eslint.isPathIgnored(path.join(ROOT_DIR, file))) {
+    return;
+  }
+  filesToProcess++;
+  runLint({ cwd: ROOT_DIR }, [file])
+    .then(function(results) {
+      const result = results[0];
+      if (result) {
+        delete result.source;
+        cache[result.filePath] = result;
+      }
+      filesToProcess--;
+    })
+    .catch(e => console.error(e));
+}
+
+const lintAllFiles = (files) => {
+  files.map((file, _) => {
+    lintFile(file);
+  });
+}
+
 export default class Server {
-  constructor() {
-    this._setupWatcher(WatchmanClient);
+  constructor(port, numWorkers, pathsToLint) {
+    this.port = port;
+    this.numWorkers = numWorkers;
+    this.pathsToLint = pathsToLint;
+
+    this._setupSaneWatcher();
+
     const server = dnode({
       status: (param, cb) => {
         if (filesToProcess === 0) {
           return cb(getResultsFromCache());
         }
 
-        setInterval(
-          () => {
-            if (filesToProcess > 0) {
-              // console.log(`Linting... ${filesToProcess} left`);
-            } else {
-              cb(getResultsFromCache());
-            }
-          },
-          1000
-        );
+        process.send({filesToProcess: filesToProcess});
       }
     });
-    server.listen(5004);
+
+    process.send({server: server})
+
+    server.listen(this.port);
   }
-  _setupWatcher(Client) {
-    const client = new Client();
-    client.watch({
-      dir: ROOT_DIR,
-      onChange: changedFile => {
-        if (eslint.isPathIgnored(path.join(ROOT_DIR, changedFile.name))) {
-          return;
-        }
-        filesToProcess++;
-        runLint({ cwd: ROOT_DIR }, [changedFile.name])
-          .then(function(results) {
-            const result = results[0];
-            if (result) {
-              delete result.source;
-              cache[result.filePath] = result;
-            }
-            filesToProcess--;
-          })
-          .catch(e => console.error(e));
-      }
+
+  _setupSaneWatcher() {
+    // TODO(allenk): Fix the glob to come from a top-level .esprintrc file
+    const watcher = sane(process.cwd(), {
+      glob: 'app/**/*.js',
+      ignored: [/node_modules/],
+      dot: true,
+      watchman: true,
+    });
+
+    watcher.on('ready', () => {
+      glob(watcher.globs[0], {}, (err, files) => {
+        lintAllFiles(files);
+      });
+    });
+    watcher.on('change', (filepath, root, stat) => {
+      //TODO(allenk): Check for .eslintrc changes, invalidate the cache, and lint all files again
+      lintFile(filepath);
+    });
+    watcher.on('add', (filepath, root, stat) => {
+      lintFile(filepath);
     });
   }
 }
-
-// setInterval(
-//   () => {
-//     if (filesToProcess > 0) {
-//       console.log(`Linting... ${filesToProcess} left`);
-//     } else {
-//       const results = [];
-//       Object.keys(cache).forEach(filepath => {
-//         if (
-//           cache[filepath] &&
-//           (cache[filepath].errorCount > 0 || cache[filepath].warningCount > 0)
-//         ) {
-//           results.push(cache[filepath]);
-//         }
-//       });
-//       prettyPrintResults(results);
-//     }
-//   },
-//   5000
-// );

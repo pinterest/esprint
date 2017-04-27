@@ -1,18 +1,35 @@
 import dnode from 'dnode';
 const CLIEngine = require('eslint').CLIEngine;
 
-const ROOT_DIR = '/Users/arthur/code/pinboard/webapp';
-const eslint = new CLIEngine({ cwd: ROOT_DIR });
+const eslint = new CLIEngine();
 
 function prettyPrintResults(results) {
-  var formatter = eslint.getFormatter();
+  const formatter = eslint.getFormatter();
   console.log(formatter(results));
 }
 
-var d = dnode.connect(5004);
-d.on('remote', function(remote) {
-  remote.status('', results => {
-    prettyPrintResults(results);
-    d.end();
-  });
-});
+export default class Client {
+  constructor(port) {
+    this.port = port;
+    this.completedFullRun = false;
+  }
+
+  connect() {
+    const d = dnode.connect(this.port);
+    d.on('remote', function(remote) {
+      setInterval(() => {
+        remote.status('', results => {
+          // TODO(allenk): make the results more robust, and invalidate full runs from the server
+          if (results.length && !this.completedFullRun) {
+            this.completedFullRun = true;
+            prettyPrintResults(results);
+            d.end();
+            process.exit(0);
+          } else {
+            return;
+          }
+        });
+      }, 1000);
+    });
+  }
+}
