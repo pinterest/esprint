@@ -53,7 +53,7 @@ export default class Server {
     this.numWorkers = numWorkers;
     this.pathsToLint = pathsToLint;
 
-    this._setupSaneWatcher();
+    this._setupWatcher();
 
     const server = dnode({
       status: (param, cb) => {
@@ -70,7 +70,7 @@ export default class Server {
     server.listen(this.port);
   }
 
-  _setupSaneWatcher() {
+  _setupWatcher() {
     // TODO(allenk): Fix the glob to come from a top-level .esprintrc file
     const watcher = sane(process.cwd(), {
       glob: 'app/**/*.js',
