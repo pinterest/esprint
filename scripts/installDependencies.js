@@ -11,7 +11,6 @@ if (!packageJson) {
   process.exit(0);
 }
 
-let packages = [];
 let command = 'npm i ';
 
 const devDeps = packageJson['devDependencies'];
