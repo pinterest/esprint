@@ -1,7 +1,6 @@
 # esprint [![npm version](https://img.shields.io/npm/v/esprint.svg?style=flat)](https://www.npmjs.com/package/esprint)
 
-ESprint parallelizes ESLint across multiple threads in order to see tremendous performance benefits when linting a large
-number of files.
+esprint speeds up eslint by running the linting engine across multiple threads, and setting up a server daemon to cache the lint status of each file in memory. It uses a watcher to determine when files change, as to only re-lint what is necessary.
 
 ## Usage
 TODO
