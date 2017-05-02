@@ -135,5 +135,4 @@ export default class Server {
       this.lintFile(file);
     });
   }
-
 }
