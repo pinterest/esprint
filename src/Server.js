@@ -2,11 +2,12 @@ import dnode from 'dnode';
 import path from 'path';
 import sane from 'sane';
 import glob from 'glob';
+import fs from 'fs';
 import { run as runLint } from './LintRunner';
 const CLIEngine = require('eslint').CLIEngine;
 
 const ROOT_DIR = process.cwd();
-const cache = {};
+let cache = {};
 let filesToProcess = 0;
 
 const eslint = new CLIEngine({ cwd: ROOT_DIR });
@@ -25,7 +26,7 @@ const getResultsFromCache = () => {
 }
 
 const lintFile = (file) => {
-  if (eslint.isPathIgnored(path.join(ROOT_DIR, file))) {
+  if (eslint.isPathIgnored(path.join(ROOT_DIR, file)) || file.indexOf('eslint') !== -1) {
     return;
   }
   filesToProcess++;
@@ -44,24 +45,43 @@ const lintFile = (file) => {
 const lintAllFiles = (files) => {
   files.map((file, _) => {
     lintFile(file);
+    process.send({ file: file });
   });
 }
 
-export default class Server {
-  constructor(port, numWorkers, pathsToLint) {
-    this.port = port;
-    this.numWorkers = numWorkers;
-    this.pathsToLint = pathsToLint;
+// Returns the current folder that a file is in
+const getDirectory = (filePath) => {
+  let dir = filePath.split("/")
+  dir.pop();
+  dir = dir.join("/");
+  return dir;
+}
 
-    this._setupWatcher();
+export default class Server {
+  constructor(options) {
+    const {
+      workers,
+      port,
+      rcPath,
+    } = options;
+
+    this.port = port;
+    this.numWorkers = workers;
+    this.rcPath = rcPath;
+
+    this._setupEsprintrc(this.rcPath);
+
+    const rootDir = getDirectory(this.rcPath);
+
+    this._setupWatcher(rootDir, this.paths, this.ignored);
 
     const server = dnode({
       status: (param, cb) => {
         if (filesToProcess === 0) {
           return cb(getResultsFromCache());
+        } else {
+          return cb({message: "Linting...", files: filesToProcess})
         }
-
-        process.send({filesToProcess: filesToProcess});
       }
     });
 
@@ -70,26 +90,44 @@ export default class Server {
     server.listen(this.port);
   }
 
-  _setupWatcher() {
-    // TODO(allenk): Fix the glob to come from a top-level .esprintrc file
-    const watcher = sane(process.cwd(), {
-      glob: 'app/**/*.js',
-      ignored: [/node_modules/],
+  _setupWatcher(root, paths, ignored) {
+    const watcher = sane(root, {
+      glob: paths,
+      ignored: ignored,
       dot: true,
       watchman: true,
     });
 
     watcher.on('ready', () => {
-      glob(watcher.globs[0], {}, (err, files) => {
-        lintAllFiles(files);
+      watcher.globs.forEach((jsGlob, idx) => {
+        glob(jsGlob, {}, (err, files) => {
+          lintAllFiles(files);
+        });
       });
     });
     watcher.on('change', (filepath, root, stat) => {
-      //TODO(allenk): Check for .eslintrc changes, invalidate the cache, and lint all files again
-      lintFile(filepath);
+      // TODO(allenk): Check for .eslintrc changes, invalidate the cache, and lint all files again
+      process.send({filePath: filepath});
+      if (filepath.indexOf('.eslintrc') !== -1) {
+        watcher.globs.forEach((jsGlob, idx) => {
+          glob(jsGlob, {}, (err, files) => {
+            cache = {};
+            lintAllFiles(files);
+          })
+        })
+      }
+      // } else {
+      // lintFile(filepath);
+      // }
     });
     watcher.on('add', (filepath, root, stat) => {
       lintFile(filepath);
     });
+  }
+
+  _setupEsprintrc() {
+    const rc = JSON.parse(fs.readFileSync(this.rcPath));
+    this.paths = rc.paths;
+    this.ignored = rc.ignored;
   }
 }

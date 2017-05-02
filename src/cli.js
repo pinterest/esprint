@@ -2,11 +2,11 @@
 
 import yargs from 'yargs';
 import Client from './Client.js';
+import fs from 'fs';
 import { fork } from 'child_process';
-import { isPortTaken, promisify } from './util';
+import { isPortTaken, findFile, formatParams } from './util';
 
 const DEFAULT_PORT_NUMBER = 5004;
-// TODO(allenk): See if this does anything
 const DEFAULT_NUM_WORKERS = 4;
 
 const start = () => {
@@ -27,9 +27,14 @@ const start = () => {
     })
     .help().argv
 
-  const pathsToWatch = options._;
+  const filePath = findFile('.esprintrc');
 
-  Object.assign(options, {paths: pathsToWatch});
+  if (!filePath) {
+    console.error('Unable to find `.esprintrc` file. Exiting...');
+    process.exit(0);
+  } else {
+     Object.assign(options, {rcPath: filePath});
+  }
 
   connect(options);
 };
@@ -37,16 +42,17 @@ const start = () => {
 const connect = (options) => {
   const {
     port,
-    paths,
     workers,
+    rcPath,
   } = options;
 
   isPortTaken(port).then(isTaken => {
     // start the server if it isn't running
     const client = new Client(port);
+
     if (!isTaken) {
       const child = fork(
-        require.resolve('./startServer.js'), [port, workers, paths], {/* silent: true */}
+        require.resolve('./startServer.js'), [`--port=${port}`, `--workers=${workers}`, `--rcPath=${rcPath}`], {/* silent: true */}
       );
 
       child.on('message', message => {

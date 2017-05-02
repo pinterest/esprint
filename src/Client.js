@@ -1,4 +1,5 @@
 import dnode from 'dnode';
+
 const CLIEngine = require('eslint').CLIEngine;
 
 const eslint = new CLIEngine();
@@ -6,6 +7,10 @@ const eslint = new CLIEngine();
 function prettyPrintResults(results) {
   const formatter = eslint.getFormatter();
   console.log(formatter(results));
+}
+
+const objEqual = (obj1, obj2) => {
+
 }
 
 export default class Client {
@@ -19,14 +24,10 @@ export default class Client {
     d.on('remote', function(remote) {
       setInterval(() => {
         remote.status('', results => {
-          // TODO(allenk): make the results more robust, and invalidate full runs from the server
-          if (results.length && !this.completedFullRun) {
-            this.completedFullRun = true;
+          if (!results.message) {
             prettyPrintResults(results);
-            d.end();
-            process.exit(0);
           } else {
-            return;
+            console.log(results.message, results.files);
           }
         });
       }, 1000);
