@@ -9,14 +9,9 @@ function prettyPrintResults(results) {
   console.log(formatter(results));
 }
 
-const objEqual = (obj1, obj2) => {
-
-}
-
 export default class Client {
   constructor(port) {
     this.port = port;
-    this.completedFullRun = false;
   }
 
   connect() {
@@ -26,6 +21,8 @@ export default class Client {
         remote.status('', results => {
           if (!results.message) {
             prettyPrintResults(results);
+            d.close();
+            process.exit(0)
           } else {
             console.log(results.message, results.files);
           }

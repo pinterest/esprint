@@ -7,47 +7,8 @@ import { run as runLint } from './LintRunner';
 const CLIEngine = require('eslint').CLIEngine;
 
 const ROOT_DIR = process.cwd();
-let cache = {};
-let filesToProcess = 0;
 
 const eslint = new CLIEngine({ cwd: ROOT_DIR });
-
-const getResultsFromCache = () => {
-  const results = [];
-  Object.keys(cache).forEach(filepath => {
-    if (
-      cache[filepath] &&
-      (cache[filepath].errorCount > 0 || cache[filepath].warningCount > 0)
-    ) {
-      results.push(cache[filepath]);
-    }
-  });
-  return results;
-}
-
-const lintFile = (file) => {
-  if (eslint.isPathIgnored(path.join(ROOT_DIR, file)) || file.indexOf('eslint') !== -1) {
-    return;
-  }
-  filesToProcess++;
-  runLint({ cwd: ROOT_DIR }, [file])
-    .then(function(results) {
-      const result = results[0];
-      if (result) {
-        delete result.source;
-        cache[result.filePath] = result;
-      }
-      filesToProcess--;
-    })
-    .catch(e => console.error(e));
-}
-
-const lintAllFiles = (files) => {
-  files.map((file, _) => {
-    lintFile(file);
-    process.send({ file: file });
-  });
-}
 
 // Returns the current folder that a file is in
 const getDirectory = (filePath) => {
@@ -69,18 +30,20 @@ export default class Server {
     this.numWorkers = workers;
     this.rcPath = rcPath;
 
-    this._setupEsprintrc(this.rcPath);
+    this.cache = {};
+    this.filesToProcess = 0;
 
     const rootDir = getDirectory(this.rcPath);
 
+    this._setupEsprintrc(this.rcPath);
     this._setupWatcher(rootDir, this.paths, this.ignored);
 
     const server = dnode({
       status: (param, cb) => {
-        if (filesToProcess === 0) {
-          return cb(getResultsFromCache());
+        if (this.filesToProcess === 0) {
+          return cb(this.getResultsFromCache());
         } else {
-          return cb({message: "Linting...", files: filesToProcess})
+          return cb({message: "Linting...", files: this.filesToProcess})
         }
       }
     });
@@ -99,29 +62,34 @@ export default class Server {
     });
 
     watcher.on('ready', () => {
-      watcher.globs.forEach((jsGlob, idx) => {
-        glob(jsGlob, {}, (err, files) => {
-          lintAllFiles(files);
+      let filePaths = [];
+      for (let i = 0; i < paths.length; i++) {
+        const files = glob.sync(paths[i], {});
+        files.forEach((file, idx) => {
+          filePaths.push(file);
         });
-      });
+      };
+
+      this.lintAllFiles(filePaths);
     });
+
     watcher.on('change', (filepath, root, stat) => {
-      // TODO(allenk): Check for .eslintrc changes, invalidate the cache, and lint all files again
-      process.send({filePath: filepath});
+      let filePaths = [];
       if (filepath.indexOf('.eslintrc') !== -1) {
-        watcher.globs.forEach((jsGlob, idx) => {
-          glob(jsGlob, {}, (err, files) => {
-            cache = {};
-            lintAllFiles(files);
-          })
-        })
+        this.cache = {};
+        for (let i = 0; i < paths.length; i++) {
+          const files = glob.sync(paths[i], {});
+          files.forEach((file, idx) => {
+            filePaths.push(file);
+          });
+        }
+        this.lintAllFiles(filePaths)
+      } else {
+        this.lintFile(filepath);
       }
-      // } else {
-      // lintFile(filepath);
-      // }
     });
     watcher.on('add', (filepath, root, stat) => {
-      lintFile(filepath);
+      this.lintFile(filepath);
     });
   }
 
@@ -130,4 +98,42 @@ export default class Server {
     this.paths = rc.paths;
     this.ignored = rc.ignored;
   }
+
+  getResultsFromCache() {
+    const results = [];
+    Object.keys(this.cache).forEach(filepath => {
+      if (
+        this.cache[filepath] &&
+        (this.cache[filepath].errorCount > 0 || this.cache[filepath].warningCount > 0)
+      ) {
+        results.push(this.cache[filepath]);
+      }
+    });
+    return results;
+  }
+
+  lintFile(file) {
+    if (eslint.isPathIgnored(path.join(ROOT_DIR, file)) || file.indexOf('eslint') !== -1) {
+      return;
+    }
+    this.filesToProcess++;
+    const that = this;
+    runLint({ cwd: ROOT_DIR }, [file])
+      .then(function(results) {
+        const result = results[0];
+        if (result) {
+          delete result.source;
+          that.cache[result.filePath] = result;
+        }
+        that.filesToProcess--;
+      })
+      .catch(e => console.error(e));
+  }
+
+  lintAllFiles(files) {
+    files.map((file, _) => {
+      this.lintFile(file);
+    });
+  }
+
 }
