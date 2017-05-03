@@ -21,10 +21,12 @@ export default class Client {
         remote.status('', results => {
           if (!results.message) {
             prettyPrintResults(results);
-            d.close();
+            d.end();
             process.exit(0)
           } else {
-            console.log(results.message, results.files);
+            process.stdout.clearLine();
+            process.stdout.cursorTo(0);
+            process.stdout.write(results.message + " " + results.files + " left to lint");
           }
         });
       }, 1000);

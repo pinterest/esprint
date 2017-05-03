@@ -52,14 +52,11 @@ export const isPortTaken = (port) => {
  * @return path - the path where the fileName is found
  */
 export const findFile = (fileName) => {
-  let cwd = process.cwd();
-  let curDir = cwd;
-  let exists = fs.existsSync(path.join(process.cwd(), fileName));
-  while (!exists && cwd !== '/') {
-    curDir = process.chdir('..');
-    exists = fs.existsSync(path.join(process.cwd(), fileName));
+  for (let curDir = process.cwd(); curDir !== '/'; curDir = path.resolve(curDir, '..')) {
+    const filepath = path.join(curDir, fileName);
+    if (fs.existsSync(filepath)) {
+      return filepath;
+    }
   }
-  let filePath = exists ? path.join(process.cwd(), fileName) : '';
-  process.chdir(cwd);
-  return filePath;
+  return '';
 };

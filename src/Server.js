@@ -100,16 +100,10 @@ export default class Server {
   }
 
   getResultsFromCache() {
-    const results = [];
-    Object.keys(this.cache).forEach(filepath => {
-      if (
-        this.cache[filepath] &&
+    return Object.keys(this.cache).filter(filepath => {
+      return this.cache[filepath] &&
         (this.cache[filepath].errorCount > 0 || this.cache[filepath].warningCount > 0)
-      ) {
-        results.push(this.cache[filepath]);
-      }
-    });
-    return results;
+    }).map(filepath => this.cache[filepath]);
   }
 
   lintFile(file) {
