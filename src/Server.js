@@ -10,14 +10,6 @@ const ROOT_DIR = process.cwd();
 
 const eslint = new CLIEngine({ cwd: ROOT_DIR });
 
-// Returns the current folder that a file is in
-const getDirectory = (filePath) => {
-  let dir = filePath.split("/")
-  dir.pop();
-  dir = dir.join("/");
-  return dir;
-}
-
 export default class Server {
   constructor(options) {
     const {
@@ -33,7 +25,7 @@ export default class Server {
     this.cache = {};
     this.filesToProcess = 0;
 
-    const rootDir = getDirectory(this.rcPath);
+    const rootDir = path.dirname(this.rcPath);
 
     this._setupEsprintrc(this.rcPath);
     this._setupWatcher(rootDir, this.paths, this.ignored);
