@@ -1,6 +1,8 @@
 import net from 'net';
+import fs from 'fs';
+import path from 'path';
 
-export function promisify(fn) {
+export const promisify = (fn) => {
   return function() {
     var args = Array.prototype.slice.call(arguments);
     return new Promise(function(resolve, reject) {
@@ -17,7 +19,7 @@ export function promisify(fn) {
   };
 }
 
-export function flatten(array) {
+export const flatten = (array) => {
   return array.reduce(
     function(acc, curr) {
       return curr.concat(acc);
@@ -26,7 +28,7 @@ export function flatten(array) {
   );
 }
 
-export function isPortTaken(port) {
+export const isPortTaken = (port) => {
   return new Promise((resolve, reject) => {
     const tester = net
       .createServer()
@@ -44,3 +46,17 @@ export function isPortTaken(port) {
       .listen(port);
   });
 }
+
+/*
+ * Walks up a directory until a file is found.
+ * @return path - the path where the fileName is found
+ */
+export const findFile = (fileName) => {
+  for (let curDir = process.cwd(); curDir !== '/'; curDir = path.resolve(curDir, '..')) {
+    const filepath = path.join(curDir, fileName);
+    if (fs.existsSync(filepath)) {
+      return filepath;
+    }
+  }
+  return '';
+};

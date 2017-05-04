@@ -1,4 +1,5 @@
 import dnode from 'dnode';
+
 const CLIEngine = require('eslint').CLIEngine;
 
 const eslint = new CLIEngine();
@@ -11,7 +12,6 @@ function prettyPrintResults(results) {
 export default class Client {
   constructor(port) {
     this.port = port;
-    this.completedFullRun = false;
   }
 
   connect() {
@@ -19,14 +19,14 @@ export default class Client {
     d.on('remote', function(remote) {
       setInterval(() => {
         remote.status('', results => {
-          // TODO(allenk): make the results more robust, and invalidate full runs from the server
-          if (results.length && !this.completedFullRun) {
-            this.completedFullRun = true;
+          if (!results.message) {
             prettyPrintResults(results);
             d.end();
-            process.exit(0);
+            process.exit(0)
           } else {
-            return;
+            process.stdout.clearLine();
+            process.stdout.cursorTo(0);
+            process.stdout.write(results.message + " " + results.files + " left to lint");
           }
         });
       }, 1000);
