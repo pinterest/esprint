@@ -4,7 +4,7 @@ import yargs from 'yargs';
 import Client from './Client.js';
 import fs from 'fs';
 import { fork } from 'child_process';
-import { isPortTaken, findFile, formatParams } from './util';
+import { isPortTaken, findFile } from './util';
 
 const DEFAULT_PORT_NUMBER = 5004;
 const DEFAULT_NUM_WORKERS = 4;
