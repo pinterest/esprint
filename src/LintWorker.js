@@ -1,6 +1,6 @@
-var CLIEngine = require('eslint').CLIEngine;
+import { CLIEngine } from 'eslint';
 
-function lintFile(config, hash, fileArg) {
+const lintFile = (config, hash, fileArg) => {
   if (!Array.isArray(fileArg)) {
     fileArg = [fileArg];
   }
@@ -10,8 +10,8 @@ function lintFile(config, hash, fileArg) {
     cacheLocation: './.eslintcachedir/esprint.cache.' + hash
   });
 
-  var eslint = new CLIEngine(config);
-  var report = eslint.executeOnFiles(fileArg);
+  const eslint = new CLIEngine(config);
+  const report = eslint.executeOnFiles(fileArg);
 
   // autofix if possible (experimental)
   if (config.fix) {
@@ -20,7 +20,7 @@ function lintFile(config, hash, fileArg) {
   return report.results;
 }
 
-module.exports = function(options, callback) {
-  var result = lintFile(options.config, options.hash, options.fileArg);
-  callback(null, result);
-};
+module.exports = (options, callback) => {
+  const results = lintFile(options.config, options.hash, options.fileArg);
+  callback(null, results);
+}
