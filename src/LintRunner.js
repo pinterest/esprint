@@ -1,22 +1,17 @@
-var workerFarm = require('worker-farm');
-var workers = workerFarm(
+import workerFarm from 'worker-farm';
+import { promisify, flatten } from './util';
+
+const workers = workerFarm(
   {
     autoStart: true,
     maxConcurrentCallsPerWorker: Infinity
   },
   require.resolve('./LintWorker')
 );
-var promisify = require('./util').promisify;
-var flatten = require('./util').flatten;
-var hash = require('./util').hash;
 
-var workersPromise = promisify(workers);
+const workersPromise = promisify(workers);
 
-function run(config, files) {
-  // distribute files to workers by hash
-  // files.forEach(function(file) {
-  //   workerToFile[hash(file)].push(file);
-  // });
+export const run = (config, files) => {
   return Promise.all(
     files.map((file, index) => {
       return workersPromise({
@@ -25,17 +20,12 @@ function run(config, files) {
         fileArg: file
       });
     })
-  )
-    .then(function(results) {
+  ).then(results => {
       // workerFarm.end(workers);
       return flatten(results);
     })
-    .catch(function(e) {
+    .catch(e => {
       console.error(e.stack);
       process.exit(1);
     });
 }
-
-module.exports = {
-  run: run
-};
