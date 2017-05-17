@@ -4,7 +4,7 @@ import sane from 'sane';
 import glob from 'glob';
 import fs from 'fs';
 import { run as runLint } from './LintRunner';
-const CLIEngine = require('eslint').CLIEngine;
+import { CLIEngine } from 'eslint';
 
 const ROOT_DIR = process.cwd();
 
