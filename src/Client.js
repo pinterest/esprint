@@ -1,6 +1,5 @@
 import dnode from 'dnode';
-
-const CLIEngine = require('eslint').CLIEngine;
+import { CLIEngine } from 'eslint';
 
 const eslint = new CLIEngine();
 
