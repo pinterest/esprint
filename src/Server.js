@@ -54,6 +54,7 @@ export default class Server {
     });
 
     watcher.on('ready', () => {
+      process.send({gathering: "Gathering files..."})
       let filePaths = [];
       for (let i = 0; i < paths.length; i++) {
         const files = glob.sync(paths[i], {});
