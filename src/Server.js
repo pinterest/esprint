@@ -54,7 +54,7 @@ export default class Server {
     });
 
     watcher.on('ready', () => {
-      process.send({gathering: "Gathering files..."})
+      process.send({message: "Reading files to be linted"});
       let filePaths = [];
       for (let i = 0; i < paths.length; i++) {
         const files = glob.sync(paths[i], {});
@@ -87,6 +87,7 @@ export default class Server {
   }
 
   _setupEsprintrc() {
+    process.send({message: "Processing .esprintrc"});
     const rc = JSON.parse(fs.readFileSync(this.rcPath));
     this.paths = rc.paths;
     this.ignored = rc.ignored;

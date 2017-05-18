@@ -59,8 +59,10 @@ const connect = (options) => {
         if (message.server) {
           // Wait for the server to start before connecting
           client.connect();
-        } else if (message.gathering) {
-          process.stdout.write(message.gathering);
+        } else if (message.message) {
+          process.stdout.clearLine();
+          process.stdout.cursorTo(0);
+          process.stdout.write(message.message);
         }
       });
     } else {
