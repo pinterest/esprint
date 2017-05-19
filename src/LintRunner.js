@@ -1,26 +1,32 @@
 import workerFarm from 'worker-farm';
 import { promisify, flatten } from './util';
 
-const workers = workerFarm(
-  {
-    autoStart: true,
-    maxConcurrentCallsPerWorker: Infinity
-  },
-  require.resolve('./LintWorker')
-);
+export default class LintRunner {
+  constructor(numThreads) {
+    const workers = workerFarm(
+      {
+        autoStart: true,
+        maxConcurrentCallsPerWorker: Infinity,
+        maxConcurrentWorkers: numThreads,
+      },
+      require.resolve('./LintWorker')
+    );
 
-const workersPromise = promisify(workers);
+    this.workers = promisify(workers)
+  }
 
-export const run = (config, files) => {
-  return Promise.all(
-    files.map((file, index) => {
-      return workersPromise({
-        config: config,
-        hash: 'foo',
-        fileArg: file
-      });
-    })
-  ).then(results => {
+  run(config, files) {
+    const that = this;
+    return Promise.all(
+      files.map((file, index) => {
+        return that.workers({
+          config: config,
+          hash: 'foo',
+          fileArg: file
+        });
+      })
+    )
+    .then(results => {
       // workerFarm.end(workers);
       return flatten(results);
     })
@@ -28,4 +34,5 @@ export const run = (config, files) => {
       console.error(e.stack);
       process.exit(1);
     });
+  }
 }

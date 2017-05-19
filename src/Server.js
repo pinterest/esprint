@@ -3,7 +3,7 @@ import path from 'path';
 import sane from 'sane';
 import glob from 'glob';
 import fs from 'fs';
-import { run as runLint } from './LintRunner';
+import LintRunner from './LintRunner';
 import { CLIEngine } from 'eslint';
 
 const ROOT_DIR = process.cwd();
@@ -19,11 +19,11 @@ export default class Server {
     } = options;
 
     this.port = port;
-    this.numWorkers = workers;
     this.rcPath = rcPath;
 
     this.cache = {};
     this.filesToProcess = 0;
+    this.lintRunner = new LintRunner(workers);
 
     const rootDir = path.dirname(this.rcPath);
 
@@ -106,7 +106,7 @@ export default class Server {
     }
     this.filesToProcess++;
     const that = this;
-    runLint({ cwd: ROOT_DIR }, [file])
+    this.lintRunner.run({ cwd: ROOT_DIR }, [file])
       .then(function(results) {
         const result = results[0];
         if (result) {
