@@ -3,6 +3,7 @@
 import yargs from 'yargs';
 import Client from './Client.js';
 import fs from 'fs';
+import { killPort } from './commands/kill.js';
 import { fork } from 'child_process';
 import { isPortTaken, findFile } from './util';
 
@@ -13,30 +14,34 @@ const start = () => {
   const usage = `Spins up a server on a specified port to run eslint in parallel.
     Usage: esprint [args]`;
 
-  let options = yargs
+  const argv = yargs
     .usage(usage)
     .describe('port', 'The port for the server and client to connect to.')
-    .option('port', {
-      alias: 'p',
-      default: DEFAULT_PORT_NUMBER,
-    })
     .describe('workers', 'The number of parallel workers to run')
-    .option('workers', {
-      alias: 'w',
-      default: DEFAULT_NUM_WORKERS
+    .command('kill', 'Kills the background server', () => {}, () => {
+      killPort();
     })
-    .help().argv
+    .command(['run', '*'], 'The default command to run esprint', {
+      port: {
+        alias: 'p',
+        default: DEFAULT_PORT_NUMBER,
+      },
+      workers: {
+        alias: 'w',
+        default: DEFAULT_NUM_WORKERS
+      }
+    }, (argv) => {
+      const filePath = findFile('.esprintrc');
 
-  const filePath = findFile('.esprintrc');
-
-  if (!filePath) {
-    console.error('Unable to find `.esprintrc` file. Exiting...');
-    process.exit(0);
-  } else {
-     Object.assign(options, {rcPath: filePath});
-  }
-
-  connect(options);
+      if (!filePath) {
+        console.error('Unable to find `.esprintrc` file. Exiting...');
+        process.exit(0);
+      } else {
+         Object.assign(argv, {rcPath: filePath});
+      }
+      connect(argv);
+    })
+    .help().argv;
 };
 
 const connect = (options) => {
