@@ -3,6 +3,7 @@
 import yargs from 'yargs';
 import Client from './Client.js';
 import fs from 'fs';
+import { killPort } from './commands/kill.js';
 import { fork } from 'child_process';
 import { isPortTaken, findFile } from './util';
 
@@ -27,16 +28,25 @@ const start = () => {
     })
     .help().argv
 
-  const filePath = findFile('.esprintrc');
+  const commands = yargs.argv._;
 
-  if (!filePath) {
-    console.error('Unable to find `.esprintrc` file. Exiting...');
-    process.exit(0);
+  // Normal esprint run
+  if (!commands.length) {
+    const filePath = findFile('.esprintrc');
+
+    if (!filePath) {
+      console.error('Unable to find `.esprintrc` file. Exiting...');
+      process.exit(0);
+    } else {
+       Object.assign(options, {rcPath: filePath});
+    }
+    connect(options);
   } else {
-     Object.assign(options, {rcPath: filePath});
+    if (commands[0] === 'kill') {
+      killPort();
+      process.exit(0)
+    }
   }
-
-  connect(options);
 };
 
 const connect = (options) => {
