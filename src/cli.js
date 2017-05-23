@@ -21,7 +21,7 @@ const start = () => {
     .command('kill', 'Kills the background server', () => {}, () => {
       killPort();
     })
-    .command(['start', '*'], 'Starts up a background server which listens for file changes', {
+    .command(['*', 'start'], 'Starts up a background server which listens for file changes', {
       port: {
         alias: 'p',
         default: DEFAULT_PORT_NUMBER,
