@@ -3,7 +3,7 @@
 import yargs from 'yargs';
 import Client from './Client.js';
 import fs from 'fs';
-import { killPort } from './commands/kill.js';
+import { killPort, run } from './commands/';
 import { fork } from 'child_process';
 import { isPortTaken, findFile } from './util';
 
@@ -21,7 +21,7 @@ const start = () => {
     .command('kill', 'Kills the background server', () => {}, () => {
       killPort();
     })
-    .command(['run', '*'], 'The default command to run esprint', {
+    .command(['start', '*'], 'Starts up a background server which listens for file changes', {
       port: {
         alias: 'p',
         default: DEFAULT_PORT_NUMBER,
@@ -40,6 +40,22 @@ const start = () => {
          Object.assign(argv, {rcPath: filePath});
       }
       connect(argv);
+    })
+    .command('run', 'Runs parallelized esprint', {
+      workers: {
+        alias: 'w',
+        default: DEFAULT_NUM_WORKERS
+      }
+    }, (argv) => {
+      const filePath = findFile('.esprintrc');
+
+      if (!filePath) {
+        console.error('Unable to find `.esprintrc` file. Exiting...');
+        process.exit(0);
+      } else {
+         Object.assign(argv, {rcPath: filePath});
+      }
+      run(argv);
     })
     .help().argv;
 };
