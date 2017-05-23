@@ -15,6 +15,8 @@ export default class Server {
     const {
       workers,
       port,
+      paths,
+      ignored,
       rcPath,
     } = options;
 
@@ -27,8 +29,7 @@ export default class Server {
 
     const rootDir = path.dirname(this.rcPath);
 
-    this._setupEsprintrc(this.rcPath);
-    this._setupWatcher(rootDir, this.paths, this.ignored);
+    this._setupWatcher(rootDir, paths.split(","), ignored.split(","));
 
     const server = dnode({
       status: (param, cb) => {
@@ -84,13 +85,6 @@ export default class Server {
     watcher.on('add', (filepath, root, stat) => {
       this.lintFile(filepath);
     });
-  }
-
-  _setupEsprintrc() {
-    process.send({message: "Processing .esprintrc"});
-    const rc = JSON.parse(fs.readFileSync(this.rcPath));
-    this.paths = rc.paths;
-    this.ignored = rc.ignored;
   }
 
   getResultsFromCache() {

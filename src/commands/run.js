@@ -7,19 +7,14 @@ import { CLIEngine } from 'eslint';
 const ROOT_DIR = process.cwd();
 const eslint = new CLIEngine({ cwd: ROOT_DIR });
 
-const processEsprintrc = (rcPath) => {
-  const rc = JSON.parse(fs.readFileSync(rcPath));
-  return [rc.paths, rc.ignored];
-}
-
 export const runParallelLint = (options) => {
   const {
     workers,
-    rcPath,
+    paths,
+    ignored
   } = options;
 
   const lintRunner = new LintRunner(workers);
-  const [paths, ignored] = processEsprintrc(rcPath);
 
   let filePaths = [];
   process.stdout.write("Collecting files...[this may take a little bit]");
