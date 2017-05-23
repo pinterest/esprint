@@ -4,33 +4,14 @@ esprint speeds up eslint by running the linting engine across multiple threads, 
 
 ## Usage
 
-To run the esprint server, run the following command:
-
-```
-$ esprint start --workers=[num_workers] --port=[port_number]
-```
-
-The `--workers` argument specifies how many worker threads you want to start linting your application (defaults to 4), while the `--port` argument
-specifies which port to start the background server on (defaults to 5004).
-
-If you want to kill the background server, run:
-
-```
-$ esprint kill
-```
-
-Otherwise, you can tell esprint to lint all files without spinning up a server:
-
-```
-$ esprint run --workers=[num_workers]
-```
-
-### `.esprintrc`
 In order to use esprint, first place an `.esprintrc` file in your project. This is similar to a `.flowconfig`. The `.esprintrc` file describes
-which paths to lint and which paths to ignore. The two required keys are `paths`, and `ignored`, which both take arrays of globs. A sample `.esprintrc` file is shown as follows:
+which paths to lint, which paths to ignore, as well as (optionally) what port to start a lint server on, and how many threads to use when linting.
+A sample `.esprintrc` file is shown as follows:
 
 ```js
 {
+  "port": 5004 ,
+  "workers": 4,
   "paths": [
       "foo/*.js",
       "bar/**/*.js",
@@ -41,6 +22,22 @@ which paths to lint and which paths to ignore. The two required keys are `paths`
     ]
 }
 ```
+
+To run the esprint server, run the following command:
+
+```
+$ esprint
+```
+
+If the `port` key is not specified in the `.eslintrc` file, then esprint will run parallelized eslint without standing up a background server.
+
+If the server is running in the background, you can use the following command to stop the background server:
+
+```
+$ esprint kill
+```
+
+You can run `esprint` from any subdirectory that `.esprintrc` is located in, and it will still properly lint all files as specified.
 
 
 ## Developing for ESprint
