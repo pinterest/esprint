@@ -1,4 +1,4 @@
-# esprint [![npm version](https://img.shields.io/npm/v/esprint.svg?style=flat)](https://www.npmjs.com/package/esprint)
+# esprint [![Build Status](https://img.shields.io/travis/arthuralee/esprint/master.svg?style=flat)](https://travis-ci.org/arthuralee/esprint) [![npm version](https://img.shields.io/npm/v/esprint.svg?style=flat)](https://www.npmjs.com/package/esprint)
 
 esprint speeds up eslint by running the linting engine across multiple threads, and optionally sets up a server daemon to cache the lint status of each file in memory. It uses a watcher to determine when files change, as to only re-lint what is necessary.
 
