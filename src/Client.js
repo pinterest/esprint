@@ -1,5 +1,6 @@
 import dnode from 'dnode';
 import { CLIEngine } from 'eslint';
+import { clearLine } from './cliUtils';
 
 const eslint = new CLIEngine();
 
@@ -23,8 +24,7 @@ export default class Client {
             d.end();
             process.exit(0)
           } else {
-            process.stdout.clearLine();
-            process.stdout.cursorTo(0);
+            clearLine();
             process.stdout.write(results.message + " " + results.files + " left to lint");
           }
         });

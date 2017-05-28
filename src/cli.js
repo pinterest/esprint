@@ -6,6 +6,7 @@ import fs from 'fs';
 import { killPort, run } from './commands/';
 import { fork } from 'child_process';
 import { isPortTaken, findFile } from './util';
+import { clearLine } from './cliUtils';
 
 const DEFAULT_PORT_NUMBER = 5004;
 const DEFAULT_NUM_WORKERS = 4;
@@ -25,7 +26,7 @@ const start = () => {
 
       if (!filePath) {
         console.error('Unable to find `.esprintrc` file. Exiting...');
-        process.exit(0);
+        process.exit(1);
       } else {
         const rc = JSON.parse(fs.readFileSync(filePath));
 
@@ -63,7 +64,7 @@ const connect = (options) => {
 
     if (!isTaken) {
       const child = fork(
-        require.resolve('./startServer.js'), args, {/* silent: true */}
+        require.resolve('./startServer.js'), args, { silent: true }
       );
 
       child.on('message', message => {
@@ -71,8 +72,7 @@ const connect = (options) => {
           // Wait for the server to start before connecting
           client.connect();
         } else if (message.message) {
-          process.stdout.clearLine();
-          process.stdout.cursorTo(0);
+          clearLine();
           process.stdout.write(message.message);
         }
       });
