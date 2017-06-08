@@ -10,6 +10,26 @@ import { isPortTaken, findFile } from './util';
 const DEFAULT_PORT_NUMBER = 5004;
 const DEFAULT_NUM_WORKERS = 4;
 
+const getEsprintOptions = () => {
+  const options = {};
+  const filePath = findFile('.esprintrc');
+
+  if (!filePath) {
+    console.error('Unable to find `.esprintrc` file. Exiting...');
+    process.exit(0);
+  } else {
+    const rc = JSON.parse(fs.readFileSync(filePath));
+    Object.assign(options, rc);
+    Object.assign(options, {rcPath: filePath});
+
+    if (!rc.workers) {
+     Object.assign(options, {workers: DEFAULT_NUM_WORKERS});
+    }
+  }
+
+  return options;
+}
+
 const start = () => {
   const options = {};
   const usage = `Spins up a server on a specified port to run eslint in parallel.
@@ -20,25 +40,14 @@ const start = () => {
     .command('kill', 'Kills the background server', () => {}, () => {
       killPort();
     })
+    .command('run', 'Runs eslint in parallel with no background server', () => {}, () => {
+      run()
+    })
     .command(['*', 'start'], 'Starts up a background server which listens for file changes. If no port is specified, then runs parallelized eslint with no background server', () => {}, (argv) => {
-      const filePath = findFile('.esprintrc');
-
-      if (!filePath) {
-        console.error('Unable to find `.esprintrc` file. Exiting...');
-        process.exit(0);
+      if (!options.port) {
+        run(options);
       } else {
-        const rc = JSON.parse(fs.readFileSync(filePath));
-        Object.assign(options, rc);
-        Object.assign(options, {rcPath: filePath});
-
-        if (!rc.workers) {
-         Object.assign(options, {workers: DEFAULT_NUM_WORKERS});
-        }
-        if (!rc.port) {
-          run(options);
-        } else {
-          connect(options);
-        }
+        connect(options);
       }
     })
     .help().argv;
