@@ -11,6 +11,30 @@ import { clearLine } from './cliUtils';
 const DEFAULT_PORT_NUMBER = 5004;
 const DEFAULT_NUM_WORKERS = 4;
 
+const getEsprintOptions = () => {
+  const options = {};
+  const filePath = findFile('.esprintrc');
+
+  if (!filePath) {
+    console.error('Unable to find `.esprintrc` file. Exiting...');
+    process.exit(1);
+  } else {
+    const rc = JSON.parse(fs.readFileSync(filePath));
+
+    if (!rc.workers) {
+      Object.assign(options, {workers: DEFAULT_NUM_WORKERS});
+    } else if (rc.workers && rc.workers > require('os').cpus().length) {
+      console.error(`Cannot use the amount of worker threads specified! Maximum: ${require('os').cpus().length}. Specified: ${rc.workers}. Exiting...`);
+      process.exit(0);
+    }
+
+    Object.assign(options, rc);
+    Object.assign(options, {rcPath: filePath});
+
+    return options;
+  }
+}
+
 const start = () => {
   const options = {};
   const usage = `Spins up a server on a specified port to run eslint in parallel.
@@ -21,30 +45,16 @@ const start = () => {
     .command('kill', 'Kills the background server', () => {}, () => {
       killPort();
     })
-    .command(['*', 'start'], 'Starts up a background server which listens for file changes. If no port is specified, then runs parallelized eslint with no background server', () => {}, (argv) => {
-      const filePath = findFile('.esprintrc');
-
-      if (!filePath) {
-        console.error('Unable to find `.esprintrc` file. Exiting...');
+    .command('check', 'Runs eslint in parallel with no background server', () => {}, () => {
+      const options = getEsprintOptions();
+      run(options);
+    })
+    .command(['*', 'start'], 'Starts up a background server which listens for file changes.', () => {}, (argv) => {
+      const options = getEsprintOptions();
+      if (!options.port) {
         process.exit(1);
       } else {
-        const rc = JSON.parse(fs.readFileSync(filePath));
-
-        if (!rc.workers) {
-          Object.assign(options, {workers: DEFAULT_NUM_WORKERS});
-        } else if (rc.workers && rc.workers > require('os').cpus().length) {
-          conosle.error(`Cannot use the amount of worker threads specified! Maximum: ${require('os').cpus().length}. Specified: ${rc.workers}. Exiting...`);
-          process.exit(0);
-        }
-
-        Object.assign(options, rc);
-        Object.assign(options, {rcPath: filePath});
-
-        if (!rc.port) {
-          run(options);
-        } else {
-          connect(options);
-        }
+        connect(options);
       }
     })
     .help().argv;
