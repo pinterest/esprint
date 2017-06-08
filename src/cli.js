@@ -24,7 +24,7 @@ const getEsprintOptions = () => {
     if (!rc.workers) {
       Object.assign(options, {workers: DEFAULT_NUM_WORKERS});
     } else if (rc.workers && rc.workers > require('os').cpus().length) {
-      conosle.error(`Cannot use the amount of worker threads specified! Maximum: ${require('os').cpus().length}. Specified: ${rc.workers}. Exiting...`);
+      console.error(`Cannot use the amount of worker threads specified! Maximum: ${require('os').cpus().length}. Specified: ${rc.workers}. Exiting...`);
       process.exit(0);
     }
 
