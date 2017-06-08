@@ -22,7 +22,7 @@ export default class Client {
           if (!results.message) {
             prettyPrintResults(results);
             d.end();
-            process.exit(0)
+            process.exit(results && results.length > 0 ? 1 : 0);
           } else {
             clearLine();
             process.stdout.write(results.message + " " + results.files + " left to lint");
