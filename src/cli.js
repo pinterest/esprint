@@ -45,14 +45,14 @@ const start = () => {
     .command('kill', 'Kills the background server', () => {}, () => {
       killPort();
     })
-    .command('run', 'Runs eslint in parallel with no background server', () => {}, () => {
+    .command('check', 'Runs eslint in parallel with no background server', () => {}, () => {
       const options = getEsprintOptions();
       run(options);
     })
-    .command(['*', 'start'], 'Starts up a background server which listens for file changes. If no port is specified, then runs parallelized eslint with no background server', () => {}, (argv) => {
+    .command(['*', 'start'], 'Starts up a background server which listens for file changes.', () => {}, (argv) => {
       const options = getEsprintOptions();
       if (!options.port) {
-        run(options);
+        process.exit(1);
       } else {
         connect(options);
       }
