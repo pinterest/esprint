@@ -20,7 +20,8 @@ afterEach(() => {
 });
 
 test('Properly lints and returns errors', () => {
-  const result = runEsprint(path.join(__dirname, '..'));
+  const results = runEsprint(path.join(__dirname, '..'));
   const expectedError = expect.stringContaining('error  Unexpected var, use let or const instead  no-var');
-  expect(result.stdout.toString()).toEqual(expectedError);
+  expect(results.error).toBeDefined();
+  expect(results.error.stdout.toString()).toEqual(expectedError);
 });

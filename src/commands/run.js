@@ -53,7 +53,7 @@ export const runParallelLint = (options) => {
       });
       const formatter = eslint.getFormatter();
       console.log(formatter(lintResults));
-      process.exit(0);
+      process.exit(lintResults > 0 ? 0 : 1);
     }
   }, 1000);
 };
