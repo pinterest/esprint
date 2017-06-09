@@ -14,7 +14,7 @@ export const connect = (options, eslint) => {
 
   isPortTaken(port).then(isTaken => {
     // start the server if it isn't running
-    const client = new Client(port);
+    const client = new Client(port, eslint);
 
     if (!isTaken) {
       const child = fork(
