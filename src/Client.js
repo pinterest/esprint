@@ -1,17 +1,10 @@
 import dnode from 'dnode';
-import { CLIEngine } from 'eslint';
 import { clearLine } from './cliUtils';
 
-const eslint = new CLIEngine();
-
-function prettyPrintResults(results) {
-  const formatter = eslint.getFormatter();
-  console.log(formatter(results));
-}
-
 export default class Client {
-  constructor(port) {
+  constructor(port, eslint) {
     this.port = port;
+    this.eslint = eslint;
   }
 
   connect() {
@@ -20,7 +13,8 @@ export default class Client {
       setInterval(() => {
         remote.status('', results => {
           if (!results.message) {
-            prettyPrintResults(results);
+            const formatter = this.eslint.getFormatter();
+            console.log(formatter(results));
             d.end();
             process.exit(results && results.length > 0 ? 1 : 0);
           } else {

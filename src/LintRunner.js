@@ -27,7 +27,6 @@ export default class LintRunner {
       })
     )
     .then(results => {
-      // workerFarm.end(workers);
       return flatten(results);
     })
     .catch(e => {
