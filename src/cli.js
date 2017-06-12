@@ -54,7 +54,12 @@ const start = () => {
       if (!options.port) {
         process.exit(1);
       } else {
-        connect(options);
+        if (argv.json) {
+          Object.assign(options, {json: argv.json});
+          run(options);
+        } else {
+          connect(options);
+        }
       }
     })
     .help().argv;
