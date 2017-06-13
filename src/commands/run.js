@@ -17,7 +17,7 @@ export const runParallelLint = (options) => {
   const lintRunner = new LintRunner(workers);
 
   let filePaths = [];
-  process.stdout.write("Collecting files...[this may take a little bit]");
+  process.stdout.write("Reading files to be linted...[this may take a little bit]");
   for (let i = 0; i < paths.length; i++) {
     const files = glob.sync(paths[i], {});
     files.forEach((file, idx) => {
