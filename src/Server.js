@@ -36,7 +36,7 @@ export default class Server {
         if (this.filesToProcess === 0) {
           return cb(this.getResultsFromCache());
         } else {
-          return cb({message: "Linting...", files: this.filesToProcess})
+          return cb({message: `Linting...${this.filesToProcess} left to lint`})
         }
       }
     });
@@ -55,7 +55,7 @@ export default class Server {
     });
 
     watcher.on('ready', () => {
-      process.send({message: "Reading files to be linted"});
+      process.send({message: "Reading files to be linted...[this may take a little bit]"});
       let filePaths = [];
       for (let i = 0; i < paths.length; i++) {
         const files = glob.sync(paths[i], {});

@@ -25,7 +25,7 @@ export default class Client {
             process.exit(results && results.length > 0 ? 1 : 0);
           } else {
             clearLine();
-            process.stdout.write(results.message + " " + results.files + " left to lint");
+            process.stdout.write(results.message);
           }
         });
       }, 1000);
