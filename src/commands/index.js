@@ -1,7 +1,7 @@
-import { killPort } from './kill.js';
-import { runParallelLint } from './run.js';
+import { stop } from './stop.js';
+import { check } from './check.js';
 
 export {
-  killPort,
-  runParallelLint as run
+  stop,
+  check
 };

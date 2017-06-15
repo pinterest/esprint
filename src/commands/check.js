@@ -7,7 +7,7 @@ import { CLIEngine } from 'eslint';
 const ROOT_DIR = process.cwd();
 const eslint = new CLIEngine({ cwd: ROOT_DIR });
 
-export const runParallelLint = (options) => {
+export const check = (options) => {
   const {
     workers,
     paths,
