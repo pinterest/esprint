@@ -3,7 +3,7 @@
 import yargs from 'yargs';
 import Client from './Client.js';
 import fs from 'fs';
-import { killPort, run } from './commands/';
+import { stop, check } from './commands/';
 import { fork } from 'child_process';
 import { isPortTaken, findFile } from './util';
 import { clearLine } from './cliUtils';
@@ -42,12 +42,12 @@ const start = () => {
 
   const argv = yargs
     .usage(usage)
-    .command('kill', 'Kills the background server', () => {}, () => {
-      killPort();
+    .command('stop', 'Stops running the background server', () => {}, () => {
+      stop();
     })
     .command('check', 'Runs eslint in parallel with no background server', () => {}, () => {
       const options = getEsprintOptions();
-      run(options);
+      check(options);
     })
     .command(['*', 'start'], 'Starts up a background server which listens for file changes.', () => {}, (argv) => {
       const options = getEsprintOptions();
