@@ -1,8 +1,8 @@
-import LintRunner from '../LintRunner';
 import glob from 'glob';
 import path from 'path';
 import fs from 'fs';
 import { CLIEngine } from 'eslint';
+import LintRunner from '../LintRunner';
 import { clearLine } from '../cliUtils';
 
 const ROOT_DIR = process.cwd();
@@ -12,7 +12,8 @@ export const check = (options) => {
   const {
     workers,
     paths,
-    ignored
+    ignored,
+    json
   } = options;
 
   const lintRunner = new LintRunner(workers);
@@ -51,9 +52,14 @@ export const check = (options) => {
       lintResults = lintResults.filter((result) => {
         return result.warningCount > 0 || result.errorCount > 0;
       });
-      const formatter = eslint.getFormatter();
-      console.log(formatter(lintResults));
-      process.exit(lintResults.length > 0 ? 1 : 0);
+
+      if (json) {
+        console.log(JSON.stringify(lintResults));
+      } else {
+        const formatter = eslint.getFormatter();
+        console.log(formatter(lintResults));
+      }
+      process.exit(lintResults > 0 ? 0 : 1);
     }
   }, 1000);
 };
