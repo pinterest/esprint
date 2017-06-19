@@ -3,6 +3,7 @@ import glob from 'glob';
 import path from 'path';
 import fs from 'fs';
 import { CLIEngine } from 'eslint';
+import { clearLine } from '../cliUtils';
 
 const ROOT_DIR = process.cwd();
 const eslint = new CLIEngine({ cwd: ROOT_DIR });
@@ -42,8 +43,7 @@ export const check = (options) => {
   });
 
   const interval = setInterval(() => {
-    process.stdout.clearLine();
-    process.stdout.cursorTo(0);
+    clearLine();
     process.stdout.write(`Linting files...${filesToProcess} left to lint`);
 
     if (filesToProcess === 0) {
@@ -53,7 +53,7 @@ export const check = (options) => {
       });
       const formatter = eslint.getFormatter();
       console.log(formatter(lintResults));
-      process.exit(lintResults > 0 ? 0 : 1);
+      process.exit(lintResults.length > 0 ? 1 : 0);
     }
   }, 1000);
 };
