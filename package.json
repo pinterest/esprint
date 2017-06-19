@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "pretest": "yarn run build",
-    "test": "jest tests",
+    "test": "jest tests --runInBand",
     "build": "rm -rf build && mkdir build && babel src --out-dir build",
     "prepublish": "yarn run build",
     "start": "babel --watch src --out-dir build",

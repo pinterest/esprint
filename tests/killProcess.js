@@ -1,8 +1,12 @@
 const execSync = require('child_process').execSync;
+const getPid = require('./getPid.js');
 
 function killProcess() {
   try {
-    execSync(`lsof -i TCP:5004 | grep LISTEN | awk '{print $2}' | xargs kill -9`);
+    const PID = getPid();
+    if (PID) {
+      execSync(`kill -9 ${PID}`)
+    }
   } catch (e) {}
 }
 
