@@ -52,11 +52,7 @@ export const check = (options) => {
       lintResults = lintResults.filter((result) => {
         return result.warningCount > 0 || result.errorCount > 0;
       });
-<<<<<<< HEAD:src/commands/check.js
-      const formatter = eslint.getFormatter();
-      console.log(formatter(lintResults));
-      process.exit(lintResults.length > 0 ? 1 : 0);
-=======
+
       if (json) {
         console.log(JSON.stringify(lintResults));
       } else {
@@ -64,7 +60,6 @@ export const check = (options) => {
         console.log(formatter(lintResults));
       }
       process.exit(lintResults > 0 ? 0 : 1);
->>>>>>> fb30f53... Add support for outputting JSON:src/commands/run.js
     }
   }, 1000);
 };
