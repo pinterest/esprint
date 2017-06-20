@@ -14,13 +14,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/arthuralee/esprint.git"
+    "url": "git+https://github.com/pinterest/esprint.git"
   },
-  "author": "Arthur Lee <arthur@arthurlee.me>",
+  "author": "Arthur Lee <arthur@pinterest.com>",
   "bugs": {
-    "url": "https://github.com/arthuralee/esprint/issues"
+    "url": "https://github.com/pinterest/esprint/issues"
   },
-  "homepage": "https://github.com/arthuralee/esprint#readme",
+  "homepage": "https://github.com/pinterest/esprint#readme",
   "dependencies": {
     "dnode": "^1.2.2",
     "fb-watchman": "^2.0.0",
