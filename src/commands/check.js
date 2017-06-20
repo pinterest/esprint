@@ -59,7 +59,7 @@ export const check = (options) => {
         const formatter = eslint.getFormatter();
         console.log(formatter(lintResults));
       }
-      process.exit(lintResults.length > 0 ? 0 : 1);
+      process.exit(lintResults.length > 0 ? 1 : 0);
     }
   }, 1000);
 };
