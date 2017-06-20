@@ -21,11 +21,11 @@ const getEsprintOptions = () => {
   } else {
     const rc = JSON.parse(fs.readFileSync(filePath));
 
+    const numCpus = require('os').cpus().length;
     if (!rc.workers) {
       Object.assign(options, {workers: DEFAULT_NUM_WORKERS});
-    } else if (rc.workers && rc.workers > require('os').cpus().length) {
-      console.error(`Cannot use the amount of worker threads specified! Maximum: ${require('os').cpus().length}. Specified: ${rc.workers}. Exiting...`);
-      process.exit(0);
+    } else if (rc.workers && rc.workers > numCpus) {
+      rc.workers = numCpus;
     }
 
     Object.assign(options, rc);
