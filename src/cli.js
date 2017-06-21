@@ -12,7 +12,7 @@ import { clearLine } from './cliUtils';
 const DEFAULT_PORT_NUMBER = 5004;
 const DEFAULT_NUM_WORKERS = 4;
 
-const getEsprintOptions = () => {
+const getEsprintOptions = (argv) => {
   const options = {};
   const filePath = findFile('.esprintrc');
 
@@ -33,6 +33,11 @@ const getEsprintOptions = () => {
     Object.assign(options, rc);
     Object.assign(options, {rcPath: filePath});
 
+    // Manual override from the CLI
+    if (argv.workers) {
+      options.workers = argv.workers);
+    }
+    
     return options;
   }
 }
@@ -47,12 +52,12 @@ const start = () => {
     .command('stop', 'Stops running the background server', () => {}, () => {
       stop();
     })
-    .command('check', 'Runs eslint in parallel with no background server', () => {}, () => {
-      const options = getEsprintOptions();
+    .command('check', 'Runs eslint in parallel with no background server', () => {}, (argv) => {
+      const options = getEsprintOptions(argv);
       check(options);
     })
     .command(['*', 'start'], 'Starts up a background server which listens for file changes.', () => {}, (argv) => {
-      const options = getEsprintOptions();
+      const options = getEsprintOptions(argv);
       if (!options.port) {
         process.exit(1);
       } else {
