@@ -26,6 +26,7 @@ const getEsprintOptions = () => {
     if (!rc.workers) {
       Object.assign(options, {workers: DEFAULT_NUM_WORKERS});
     } else if (rc.workers && rc.workers > numCpus) {
+      console.warn(`Number of CPUs specified (${rc.workers}) exceeded system max (${numCpus}). Using ${numCpus}`);
       rc.workers = numCpus;
     }
 
