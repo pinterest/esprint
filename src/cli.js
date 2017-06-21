@@ -3,6 +3,7 @@
 import yargs from 'yargs';
 import Client from './Client.js';
 import fs from 'fs';
+import os from 'os';
 import { stop, check } from './commands/';
 import { fork } from 'child_process';
 import { isPortTaken, findFile } from './util';
@@ -21,7 +22,7 @@ const getEsprintOptions = () => {
   } else {
     const rc = JSON.parse(fs.readFileSync(filePath));
 
-    const numCpus = require('os').cpus().length;
+    const numCpus = os.cpus().length;
     if (!rc.workers) {
       Object.assign(options, {workers: DEFAULT_NUM_WORKERS});
     } else if (rc.workers && rc.workers > numCpus) {
