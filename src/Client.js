@@ -7,14 +7,13 @@ export default class Client {
     this.eslint = eslint;
   }
 
-  connect() {
-    const self = this;
+  connect = () => {
     const d = dnode.connect(this.port);
     d.on('remote', function(remote) {
       setInterval(() => {
         remote.status('', results => {
           if (!results.message) {
-            const formatter = self.eslint.getFormatter();
+            const formatter = this.eslint.getFormatter();
             console.log(formatter(results));
             d.end();
             process.exit(results && results.length > 0 ? 1 : 0);
