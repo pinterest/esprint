@@ -3,6 +3,7 @@
 import yargs from 'yargs';
 import Client from './Client.js';
 import fs from 'fs';
+import os from 'os';
 import { stop, check } from './commands/';
 import { fork } from 'child_process';
 import { isPortTaken, findFile } from './util';
@@ -21,11 +22,12 @@ const getEsprintOptions = () => {
   } else {
     const rc = JSON.parse(fs.readFileSync(filePath));
 
+    const numCpus = os.cpus().length;
     if (!rc.workers) {
       Object.assign(options, {workers: DEFAULT_NUM_WORKERS});
-    } else if (rc.workers && rc.workers > require('os').cpus().length) {
-      console.error(`Cannot use the amount of worker threads specified! Maximum: ${require('os').cpus().length}. Specified: ${rc.workers}. Exiting...`);
-      process.exit(0);
+    } else if (rc.workers && rc.workers > numCpus) {
+      console.warn(`Number of CPUs specified (${rc.workers}) exceeded system max (${numCpus}). Using ${numCpus}`);
+      rc.workers = numCpus;
     }
 
     Object.assign(options, rc);
