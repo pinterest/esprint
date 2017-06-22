@@ -1,7 +1,9 @@
-import { stop } from './stop.js';
-import { check } from './check.js';
+import { stop } from './stop';
+import { check } from './check';
+import { connect } from './connect';
 
 export {
   stop,
-  check
+  check,
+  connect,
 };
