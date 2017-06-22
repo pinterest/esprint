@@ -17,7 +17,7 @@ export const promisify = (fn) => {
       fn.apply(this, args);
     });
   };
-}
+};
 
 export const flatten = (array) => {
   return array.reduce(
@@ -26,7 +26,7 @@ export const flatten = (array) => {
     },
     []
   );
-}
+};
 
 export const isPortTaken = (port) => {
   return new Promise((resolve, reject) => {
@@ -45,7 +45,7 @@ export const isPortTaken = (port) => {
       })
       .listen(port);
   });
-}
+};
 
 /*
  * Walks up a directory until a file is found.

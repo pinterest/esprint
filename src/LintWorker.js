@@ -18,9 +18,9 @@ const lintFile = (config, hash, fileArg) => {
     CLIEngine.outputFixes(report);
   }
   return report.results;
-}
+};
 
 module.exports = (options, callback) => {
   const results = lintFile(options.config, options.hash, options.fileArg);
   callback(null, results);
-}
+};

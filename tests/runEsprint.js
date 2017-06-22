@@ -4,7 +4,6 @@ const path = require('path');
 const esprintPath = path.join(__dirname, '../build/cli.js');
 
 function runEsprint(cwd, args) {
-  let exitCode = 0;
   try {
     const stdout = execSync(`node ${esprintPath} ${args || ''}`, {
       cwd: cwd

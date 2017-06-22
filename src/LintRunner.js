@@ -12,13 +12,13 @@ export default class LintRunner {
       require.resolve('./LintWorker')
     );
 
-    this.workers = promisify(workers)
+    this.workers = promisify(workers);
   }
 
   run(config, files) {
     const that = this;
     return Promise.all(
-      files.map((file, index) => {
+      files.map((file) => {
         return that.workers({
           config: config,
           hash: 'foo',
@@ -26,13 +26,13 @@ export default class LintRunner {
         });
       })
     )
-    .then(results => {
+      .then(results => {
       // workerFarm.end(workers);
-      return flatten(results);
-    })
-    .catch(e => {
-      console.error(e.stack);
-      process.exit(1);
-    });
+        return flatten(results);
+      })
+      .catch(e => {
+        console.error(e.stack);
+        process.exit(1);
+      });
   }
 }

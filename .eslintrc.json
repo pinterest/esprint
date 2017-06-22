@@ -23,6 +23,11 @@
         "semi": [
             "error",
             "always"
-        ]
+        ],
+        "no-empty": [
+            "error",
+            { "allowEmptyCatch": true }
+        ],
+        "no-console": 0
     }
 }

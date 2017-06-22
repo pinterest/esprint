@@ -2,7 +2,6 @@ import dnode from 'dnode';
 import path from 'path';
 import sane from 'sane';
 import glob from 'glob';
-import fs from 'fs';
 import LintRunner from './LintRunner';
 import { CLIEngine } from 'eslint';
 
@@ -29,19 +28,19 @@ export default class Server {
 
     const rootDir = path.dirname(this.rcPath);
 
-    this._setupWatcher(rootDir, paths.split(","), ignored.split(","));
+    this._setupWatcher(rootDir, paths.split(','), ignored.split(','));
 
     const server = dnode({
       status: (param, cb) => {
         if (this.filesToProcess === 0) {
           return cb(this.getResultsFromCache());
         } else {
-          return cb({message: `Linting...${this.filesToProcess} left to lint`})
+          return cb({message: `Linting...${this.filesToProcess} left to lint`});
         }
       }
     });
 
-    process.send({server: server})
+    process.send({server: server});
 
     server.listen(this.port);
   }
@@ -55,34 +54,34 @@ export default class Server {
     });
 
     watcher.on('ready', () => {
-      process.send({message: "Reading files to be linted...[this may take a little bit]"});
+      process.send({message: 'Reading files to be linted...[this may take a little bit]'});
       let filePaths = [];
       for (let i = 0; i < paths.length; i++) {
         const files = glob.sync(paths[i], {});
-        files.forEach((file, idx) => {
+        files.forEach((file) => {
           filePaths.push(file);
         });
-      };
+      }
 
       this.lintAllFiles(filePaths);
     });
 
-    watcher.on('change', (filepath, root, stat) => {
+    watcher.on('change', (filepath) => {
       let filePaths = [];
       if (filepath.indexOf('.eslintrc') !== -1) {
         this.cache = {};
         for (let i = 0; i < paths.length; i++) {
           const files = glob.sync(paths[i], {});
-          files.forEach((file, idx) => {
+          files.forEach((file) => {
             filePaths.push(file);
           });
         }
-        this.lintAllFiles(filePaths)
+        this.lintAllFiles(filePaths);
       } else {
         this.lintFile(filepath);
       }
     });
-    watcher.on('add', (filepath, root, stat) => {
+    watcher.on('add', (filepath) => {
       this.lintFile(filepath);
     });
   }
@@ -90,7 +89,7 @@ export default class Server {
   getResultsFromCache() {
     return Object.keys(this.cache).filter(filepath => {
       return this.cache[filepath] &&
-        (this.cache[filepath].errorCount > 0 || this.cache[filepath].warningCount > 0)
+        (this.cache[filepath].errorCount > 0 || this.cache[filepath].warningCount > 0);
     }).map(filepath => this.cache[filepath]);
   }
 
@@ -113,7 +112,7 @@ export default class Server {
   }
 
   lintAllFiles(files) {
-    files.map((file, _) => {
+    files.map((file) => {
       this.lintFile(file);
     });
   }

@@ -1,18 +1,14 @@
 #!/usr/bin/env node
 
 import yargs from 'yargs';
-import Client from './Client.js';
 import fs from 'fs';
 import os from 'os';
 import { stop, check, connect } from './commands/';
-import { fork } from 'child_process';
-import { isPortTaken, findFile } from './util';
-import { clearLine } from './cliUtils';
+import { findFile } from './util';
 
 const NUM_CPUS = os.cpus().length;
 
 const DEFAULT_PORT_NUMBER = 5004;
-const DEFAULT_NUM_WORKERS = 4;
 
 const getEsprintOptions = (argv) => {
   const options = {
@@ -45,13 +41,12 @@ const getEsprintOptions = (argv) => {
     
     return options;
   }
-}
+};
 
-const options = {};
 const usage = `Spins up a server on a specified port to run eslint in parallel.
   Usage: esprint [args]`;
 
-const argv = yargs
+yargs
   .usage(usage)
   .command('stop', 'Stops running the background server', () => {}, () => {
     stop();
@@ -67,10 +62,8 @@ const argv = yargs
     } else {
       if (argv.json) {
         Object.assign(options, {json: argv.json});
-        run(options);
-      } else {
-        connect(options);
       }
+      connect(options);
     }
   })
   .help().argv;

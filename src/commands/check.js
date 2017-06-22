@@ -1,6 +1,5 @@
 import glob from 'glob';
 import path from 'path';
-import fs from 'fs';
 import { CLIEngine } from 'eslint';
 import LintRunner from '../LintRunner';
 import { clearLine } from '../cliUtils';
@@ -12,25 +11,24 @@ export const check = (options) => {
   const {
     workers,
     paths,
-    ignored,
     json
   } = options;
 
   const lintRunner = new LintRunner(workers);
 
   let filePaths = [];
-  process.stdout.write("Reading files to be linted...[this may take a little bit]");
+  process.stdout.write('Reading files to be linted...[this may take a little bit]');
   for (let i = 0; i < paths.length; i++) {
     const files = glob.sync(paths[i], {});
-    files.forEach((file, idx) => {
+    files.forEach((file) => {
       filePaths.push(file);
-    })
+    });
   }
 
   let filesToProcess = 0;
   let lintResults = [];
 
-  filePaths.map((file, _) => {
+  filePaths.map((file) => {
     if (eslint.isPathIgnored(path.join(ROOT_DIR, file)) || file.indexOf('eslint') !== -1) {
       return;
     }

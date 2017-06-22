@@ -1,4 +1,4 @@
 import Server from './Server';
 import yargs from 'yargs';
 
-const server = new Server(yargs.argv);
+new Server(yargs.argv);
