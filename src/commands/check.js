@@ -5,10 +5,7 @@ import { CLIEngine } from 'eslint';
 import LintRunner from '../LintRunner';
 import { clearLine } from '../cliUtils';
 
-const ROOT_DIR = process.cwd();
-const eslint = new CLIEngine({ cwd: ROOT_DIR });
-
-export const check = (options) => {
+export const check = (options, eslint) => {
   const {
     workers,
     paths,
