@@ -9,33 +9,39 @@ import { fork } from 'child_process';
 import { isPortTaken, findFile } from './util';
 import { clearLine } from './cliUtils';
 
+const NUM_CPUS = os.cpus().length;
+
 const DEFAULT_PORT_NUMBER = 5004;
 const DEFAULT_NUM_WORKERS = 4;
 
 const getEsprintOptions = (argv) => {
-  const options = {};
+  const options = {
+    workers: NUM_CPUS,
+    port: DEFAULT_PORT_NUMBER,
+  };
+  
   const filePath = findFile('.esprintrc');
 
   if (!filePath) {
     console.error('Unable to find `.esprintrc` file. Exiting...');
     process.exit(1);
   } else {
+    // read config file
     const rc = JSON.parse(fs.readFileSync(filePath));
 
-    const numCpus = os.cpus().length;
-    if (!rc.workers) {
-      Object.assign(options, {workers: DEFAULT_NUM_WORKERS});
-    } else if (rc.workers && rc.workers > numCpus) {
-      console.warn(`Number of CPUs specified (${rc.workers}) exceeded system max (${numCpus}). Using ${numCpus}`);
-      rc.workers = numCpus;
+    // validate config file
+    if (rc.workers && rc.workers > NUM_CPUS) {
+      console.warn(`Number of CPUs specified (${rc.workers}) exceeded system max (${NUM_CPUS}). Using ${NUM_CPUS}`);
+      rc.workers = NUM_CPUS;
     }
 
+    
     Object.assign(options, rc);
     Object.assign(options, {rcPath: filePath});
 
-    // Manual override from the CLI
+    // CLI overrides
     if (argv.workers) {
-      options.workers = argv.workers);
+      options.workers = argv.workers;
     }
     
     return options;
