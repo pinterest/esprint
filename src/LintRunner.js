@@ -15,10 +15,11 @@ export default class LintRunner {
     this.workers = promisify(workers)
   }
 
-  run = (config, files) => {
+  run(config, files) {
+    const that = this;
     return Promise.all(
       files.map((file, index) => {
-        return this.workers({
+        return that.workers({
           config: config,
           hash: 'foo',
           fileArg: file
@@ -26,7 +27,7 @@ export default class LintRunner {
       })
     )
     .then(results => {
-      workerFarm.end(this.workers);
+      // workerFarm.end(workers);
       return flatten(results);
     })
     .catch(e => {
