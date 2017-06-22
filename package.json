@@ -10,7 +10,8 @@
     "build": "rm -rf build && mkdir build && babel src --out-dir build",
     "prepublish": "yarn run build",
     "start": "babel --watch src --out-dir build",
-    "deps": "node ./scripts/installDependencies.js"
+    "deps": "node ./scripts/installDependencies.js",
+    "lint": "eslint src tests"
   },
   "repository": {
     "type": "git",
@@ -30,7 +31,7 @@
     "yargs": "^8.0.1"
   },
   "peerDependencies": {
-    "eslint": "^3"
+    "eslint": ">=3"
   },
   "engines": {
     "node": ">=4"
@@ -41,7 +42,7 @@
   "devDependencies": {
     "babel-cli": "^6.24.0",
     "babel-preset-env": "^1.2.2",
-    "eslint": "^3.19.0",
+    "eslint": "^4.0.0",
     "jest": "^20.0.4"
   }
 }

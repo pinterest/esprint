@@ -20,4 +20,4 @@ before_install:
   - make
   - sudo make install
   - cd ..
-script: yarn test
+script: yarn lint && yarn test
