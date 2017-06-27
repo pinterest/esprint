@@ -31,8 +31,6 @@ export const connect = (options, eslint) => {
         }
       });
     } else {
-      // Connect anyways
-      // TODO(allenk): Actually check that the server is occupying the port
       client.connect();
     }
   });
