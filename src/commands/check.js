@@ -14,10 +14,15 @@ export const check = (options) => {
   } = options;
 
   const lintRunner = new LintRunner(workers);
-  
-  const filePaths = flatten(paths.map(globPath => glob.sync(globPath)));
 
-  lintRunner.run({ cwd: ROOT_DIR }, filePaths)
+  const filePaths = flatten(paths.map(globPath => glob.sync(globPath)));
+  // filter out the files that we tell eslint to ignore
+  const nonIgnoredFilePaths = filePaths.filter((filePath) => {
+    return !(eslint.isPathIgnored(path.join(ROOT_DIR, filePath)) || filePath.indexOf('eslint') !== -1);
+  });
+
+
+  lintRunner.run({ cwd: ROOT_DIR }, nonIgnoredFilePaths)
     .then((results) => {
       results = results.filter((result) => {
         return result.warningCount > 0 || result.errorCount > 0;
