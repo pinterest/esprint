@@ -25,7 +25,8 @@ const getEsprintOptions = (argv) => {
     const rc = JSON.parse(fs.readFileSync(filePath));
 
     Object.assign(options, rc);
-    Object.assign(options, {rcPath: filePath});
+    options.rcPath = filePath;
+    options.workers = NUM_CPUS;
 
     // CLI overrides
     if (argv.workers) {
