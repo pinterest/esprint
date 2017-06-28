@@ -1,4 +1,4 @@
-# esprint [![Build Status](https://img.shields.io/travis/arthuralee/esprint/master.svg?style=flat)](https://travis-ci.org/arthuralee/esprint) [![npm version](https://img.shields.io/npm/v/esprint.svg?style=flat)](https://www.npmjs.com/package/esprint)
+# esprint [![Build Status](https://img.shields.io/travis/pinterest/esprint/master.svg?style=flat)](https://travis-ci.org/pinterest/esprint) [![npm version](https://img.shields.io/npm/v/esprint.svg?style=flat)](https://www.npmjs.com/package/esprint)
 
 esprint (pronounced E-S-sprint) speeds up eslint by running the linting engine across multiple threads, and optionally sets up a server daemon to cache the lint status of each file in memory. It uses a watcher to determine when files change, as to only re-lint what is necessary.
 
@@ -45,7 +45,7 @@ You can run `esprint` from any subdirectory that `.esprintrc` is located in, and
 In order to use esprint in your project, clone the repository and install all of the dependencies.
 
 ```
-$ git clone https://github.com/arthuralee/esprint.git && cd esprint
+$ git clone https://github.com/pinterest/esprint.git && cd esprint
 $ yarn
 ```
 
