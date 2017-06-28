@@ -45,7 +45,7 @@ You can run `esprint` from any subdirectory that `.esprintrc` is located in, and
 In order to use esprint in your project, clone the repository and install all of the dependencies.
 
 ```
-$ git clone https://github.com/arthuralee/esprint.git && cd esprint
+$ git clone https://github.com/pinterest/esprint.git && cd esprint
 $ yarn
 ```
 
