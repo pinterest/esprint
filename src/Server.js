@@ -87,10 +87,21 @@ export default class Server {
   }
 
   getResultsFromCache() {
-    return Object.keys(this.cache).filter(filepath => {
+    const records = Object.keys(this.cache).filter(filepath => {
       return this.cache[filepath] &&
         (this.cache[filepath].errorCount > 0 || this.cache[filepath].warningCount > 0);
     }).map(filepath => this.cache[filepath]);
+
+    const { errorCount, warningCount } = records.reduce((a, b) => ({
+      errorCount: a.errorCount + b.errorCount,
+      warningCount: a.warningCount + b.warningCount,
+    }), { errorCount: 0, warningCount: 0 });
+
+    return {
+      records,
+      errorCount,
+      warningCount,
+    };
   }
 
   lintFile(file) {
@@ -101,10 +112,10 @@ export default class Server {
     const that = this;
     this.lintRunner.run({ cwd: ROOT_DIR }, [file])
       .then(function(results) {
-        const result = results[0];
-        if (result) {
-          delete result.source;
-          that.cache[result.filePath] = result;
+        const record = results.records[0];
+        if (record) {
+          delete record.source;
+          that.cache[record.filePath] = record;
         }
         that.filesToProcess--;
       })
