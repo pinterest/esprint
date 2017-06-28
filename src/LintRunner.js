@@ -27,8 +27,19 @@ export default class LintRunner {
       })
     )
       .then(results => {
-      // workerFarm.end(workers);
-        return flatten(results);
+        const records = flatten(results);
+
+        // produce a sum of total num of errors/warnings
+        const { errorCount, warningCount } = records.reduce((a, b) => ({
+          errorCount: a.errorCount + b.errorCount,
+          warningCount: a.warningCount + b.warningCount,
+        }), { errorCount: 0, warningCount: 0 });
+
+        return {
+          records,
+          errorCount,
+          warningCount,
+        };
       })
       .catch(e => {
         console.error(e.stack);

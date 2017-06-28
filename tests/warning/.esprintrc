@@ -1,0 +1,11 @@
+{
+  "port": 5004 ,
+  "workers": 1,
+  "paths": [
+    "fixture.js"
+  ],
+
+  "ignored": [
+    "**/node_modules/**/*"
+  ]
+}
