@@ -5,13 +5,12 @@ esprint (pronounced E-S-sprint) speeds up eslint by running the linting engine a
 ## Usage
 
 In order to use esprint, first place an `.esprintrc` file in your project. This is similar to a `.flowconfig`. The `.esprintrc` file describes
-which paths to lint, which paths to ignore, as well as (optionally) what port to start a lint server on, and how many threads to use when linting.
+which paths to lint, which paths to ignore, as well as (optionally) what port to start a lint server on.
 A sample `.esprintrc` file is shown as follows:
 
 ```js
 {
   "port": 5004 ,
-  "workers": 4,
   "paths": [
       "foo/*.js",
       "bar/**/*.js",
@@ -30,6 +29,12 @@ $ esprint
 ```
 
 If the `port` key is not specified in the `.esprintrc` file, then esprint will run parallelized eslint without standing up a background server.
+
+By default, esprint will split up linting duties across all CPUs in your machine. You can manually override this via the cli with the command:
+
+```
+$ esprint --workers=[num_workers]
+```
 
 If the server is running in the background, you can use the following command to stop the background server:
 
