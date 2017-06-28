@@ -1,4 +1,5 @@
 import glob from 'glob';
+import path from 'path';
 import { CLIEngine } from 'eslint';
 import LintRunner from '../LintRunner';
 import { flatten } from '../util';
