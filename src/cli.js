@@ -7,7 +7,6 @@ import { stop, check, connect } from './commands/';
 import { findFile } from './util';
 
 const NUM_CPUS = os.cpus().length;
-
 const DEFAULT_PORT_NUMBER = 5004;
 
 const getEsprintOptions = (argv) => {
@@ -15,7 +14,7 @@ const getEsprintOptions = (argv) => {
     workers: NUM_CPUS,
     port: DEFAULT_PORT_NUMBER,
   };
-  
+
   const filePath = findFile('.esprintrc');
 
   if (!filePath) {
@@ -25,20 +24,18 @@ const getEsprintOptions = (argv) => {
     // read config file
     const rc = JSON.parse(fs.readFileSync(filePath));
 
-    // validate config file
-    if (rc.workers && rc.workers > NUM_CPUS) {
-      console.warn(`Number of CPUs specified (${rc.workers}) exceeded system max (${NUM_CPUS}). Using ${NUM_CPUS}`);
-      rc.workers = NUM_CPUS;
-    }
-
     Object.assign(options, rc);
     Object.assign(options, {rcPath: filePath});
 
     // CLI overrides
     if (argv.workers) {
+      if (argv.workers > NUM_CPUS) {
+        console.warn(`Number of CPUs specified (${rc.workers}) exceeded system max (${NUM_CPUS}). Using ${NUM_CPUS}`);
+        argv.workers = NUM_CPUS;
+      }
       options.workers = argv.workers;
     }
-    
+
     return options;
   }
 };
