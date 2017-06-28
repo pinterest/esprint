@@ -1,4 +1,5 @@
 import glob from 'glob';
+import path from 'path';
 import { CLIEngine } from 'eslint';
 import LintRunner from '../LintRunner';
 import { flatten } from '../util';
@@ -14,10 +15,15 @@ export const check = (options) => {
   } = options;
 
   const lintRunner = new LintRunner(workers);
-  
-  const filePaths = flatten(paths.map(globPath => glob.sync(globPath)));
 
-  lintRunner.run({ cwd: ROOT_DIR }, filePaths)
+  const filePaths = flatten(paths.map(globPath => glob.sync(globPath)));
+  // filter out the files that we tell eslint to ignore
+  const nonIgnoredFilePaths = filePaths.filter((filePath) => {
+    return !(eslint.isPathIgnored(path.join(ROOT_DIR, filePath)) || filePath.indexOf('eslint') !== -1);
+  });
+
+
+  lintRunner.run({ cwd: ROOT_DIR }, nonIgnoredFilePaths)
     .then((results) => {
       const records = results.records.filter((record) => {
         return record.warningCount > 0 || record.errorCount > 0;
