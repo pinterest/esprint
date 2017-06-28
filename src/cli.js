@@ -31,7 +31,7 @@ const getEsprintOptions = (argv) => {
     // CLI overrides
     if (argv.workers) {
       if (argv.workers > NUM_CPUS) {
-        console.warn(`Number of CPUs specified (${rc.workers}) exceeded system max (${NUM_CPUS}). Using ${NUM_CPUS}`);
+        console.warn(`Number of CPUs specified (${argv.workers}) exceeded system max (${NUM_CPUS}). Using ${NUM_CPUS}`);
         argv.workers = NUM_CPUS;
       }
       options.workers = argv.workers;
