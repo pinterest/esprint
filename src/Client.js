@@ -20,9 +20,9 @@ export default class Client {
       setInterval(() => {
         remote.status('', results => {
           if (!results.message) {
-            prettyPrintResults(results);
             d.end();
-            process.exit(results && results.length > 0 ? 1 : 0);
+            prettyPrintResults(results.records);
+            process.exit(results && results.errorCount > 0 ? 1 : 0);
           } else {
             clearLine();
             process.stdout.write(results.message);

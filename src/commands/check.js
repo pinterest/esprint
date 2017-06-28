@@ -19,16 +19,16 @@ export const check = (options) => {
 
   lintRunner.run({ cwd: ROOT_DIR }, filePaths)
     .then((results) => {
-      results = results.filter((result) => {
-        return result.warningCount > 0 || result.errorCount > 0;
+      const records = results.records.filter((record) => {
+        return record.warningCount > 0 || record.errorCount > 0;
       });
 
       if (json) {
-        console.log(JSON.stringify(results));
+        console.log(JSON.stringify(records));
       } else {
         const formatter = eslint.getFormatter();
-        console.log(formatter(results));
+        console.log(formatter(records));
       }
-      process.exit(results.length > 0 ? 1 : 0);
+      process.exit(results && results.errorCount > 0 ? 1 : 0);
     });
 };
