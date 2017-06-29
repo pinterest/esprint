@@ -1,4 +1,4 @@
-# esprint [![Build Status](https://img.shields.io/travis/pinterest/esprint/master.svg?style=flat)](https://travis-ci.org/pinterest/esprint) [![npm version](https://img.shields.io/npm/v/esprint.svg?style=flat)](https://www.npmjs.com/package/esprint)
+# esprint - a fast eslint runner [![Build Status](https://img.shields.io/travis/pinterest/esprint/master.svg?style=flat)](https://travis-ci.org/pinterest/esprint) [![npm version](https://img.shields.io/npm/v/esprint.svg?style=flat)](https://www.npmjs.com/package/esprint)
 
 esprint (pronounced E-S-sprint) speeds up eslint by running the linting engine across multiple threads.
 esprint sets up a server daemon to cache the lint status of each file in memory. It uses a watcher to determine when files change, to only lint files as necessary. It also has a CI mode where it does not set up a daemon and just lints in parallel.
@@ -33,7 +33,7 @@ Options:
 
 ### Default mode
 
-To run the esprint, run the following command anywhere in your project:
+To run esprint, use the following command anywhere in your project:
 
 ```
 $ esprint
@@ -70,4 +70,5 @@ Refer to [CONTRIBUTING](https://github.com/pinterest/esprint/blob/master/CONTRIB
 ## Team
 
 Arthur Lee ([@compid](https://twitter.com/compid))
+
 Allen Kleiner ([@AK34_](https://twitter.com/AK34_))
