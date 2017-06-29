@@ -31,7 +31,7 @@ Options:
 
 ## Usage
 
-### Normal mode
+### Default mode
 
 To run the esprint, run the following command anywhere in your project:
 
@@ -39,7 +39,7 @@ To run the esprint, run the following command anywhere in your project:
 $ esprint
 ```
 
-esprint will find the root of your project automatically and lint the whole project. In normal mode, esprint will start a background server to watch source files and cache lint results in memory.
+esprint will find the root of your project automatically and lint the whole project. In default mode, esprint will start a background server to watch source files and cache lint results in memory.
 
 By default, esprint will split up linting duties across all CPUs in your machine. You can manually override this via the cli with the following argument:
 
