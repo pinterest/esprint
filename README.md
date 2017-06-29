@@ -1,67 +1,73 @@
 # esprint [![Build Status](https://img.shields.io/travis/pinterest/esprint/master.svg?style=flat)](https://travis-ci.org/pinterest/esprint) [![npm version](https://img.shields.io/npm/v/esprint.svg?style=flat)](https://www.npmjs.com/package/esprint)
 
-esprint (pronounced E-S-sprint) speeds up eslint by running the linting engine across multiple threads, and optionally sets up a server daemon to cache the lint status of each file in memory. It uses a watcher to determine when files change, as to only re-lint what is necessary.
+esprint (pronounced E-S-sprint) speeds up eslint by running the linting engine across multiple threads.
+esprint sets up a server daemon to cache the lint status of each file in memory. It uses a watcher to determine when files change, to only lint files as necessary. It also has a CI mode where it does not set up a daemon and just lints in parallel.
 
-## Usage
+## Configuration
 
-In order to use esprint, first place an `.esprintrc` file in your project. This is similar to a `.flowconfig`. The `.esprintrc` file describes
-which paths to lint, which paths to ignore, as well as (optionally) what port to start a lint server on.
-A sample `.esprintrc` file is shown as follows:
+In order to use esprint, first place an `.esprintrc` file in the root directory your project. This is similar to a `.flowconfig` if you use flow types. The `.esprintrc` file describes which paths to lint and which paths to ignore. You can also override the port to start the background server on.
+A sample `.esprintrc` file:
 
-```js
+```json
 {
-  "port": 5004 ,
   "paths": [
-      "foo/*.js",
-      "bar/**/*.js",
-    ],
-
+    "foo/*.js",
+    "bar/**/*.js",
+  ],
   "ignored": [
-      "**/node_modules/**/*"
-    ]
+    "**/node_modules/**/*"
+  ],
+  "port": 5004
 }
 ```
 
-To run the esprint server, run the following command:
+Options:
+
+|Name|Type|Description|
+|:--:|:--:|:----------|
+|**`paths`**|`{Array<String>}`|Glob-style paths for files to include when linting|
+|**`ignored`**|`{Array<String>}`|Glob-style paths to ignore (not watch) during dev mode for better performance (`.eslintignore` applies as normal)|
+|**`port`**|`{Number}`|(optional) Run the esprint background server on a specific port|
+
+## Usage
+
+### Normal mode
+
+To run the esprint, run the following command anywhere in your project:
 
 ```
 $ esprint
 ```
 
-If the `port` key is not specified in the `.esprintrc` file, then esprint will run parallelized eslint without standing up a background server.
+esprint will find the root of your project automatically and lint the whole project. In normal mode, esprint will start a background server to watch source files and cache lint results in memory.
 
-By default, esprint will split up linting duties across all CPUs in your machine. You can manually override this via the cli with the command:
+By default, esprint will split up linting duties across all CPUs in your machine. You can manually override this via the cli with the following argument:
 
 ```
 $ esprint --workers=[num_workers]
 ```
 
-If the server is running in the background, you can use the following command to stop the background server:
+To kill the esprint server in the background, use the following command:
 
 ```
-$ esprint kill
+$ esprint stop
 ```
 
 You can run `esprint` from any subdirectory that `.esprintrc` is located in, and it will still properly lint all files as specified.
 
+### CI Mode
+
+In CI environments, it is not always appropriate (or necessary) to start a background server. In this case, you can use the following command, which simply lints in parallel without setting up a background server:
+
+```
+$ esprint check
+```
 
 ## Developing for esprint
 
-In order to use esprint in your project, clone the repository and install all of the dependencies.
+Refer to [CONTRIBUTING](https://github.com/pinterest/esprint/blob/master/CONTRIBUTING.md)
 
-```
-$ git clone https://github.com/pinterest/esprint.git && cd esprint
-$ yarn
-```
+## Team
 
-In the esprint repo, run `yarn link`, and in your project that uses ESprint, run `yarn link esprint`. (Note: `yarn link` is only supported by `yarn` version 0.26 and later.)
-
-After that, run `yarn run deps /path/to/project/` so that esprint installs all eslint-related dependencies.
-
-In a separate tab, you can also run `npm start`. This starts up `babel-watcher`, which will compile your JavaScript.
-
-Then, run esprint directly from your `node_modules` folder like so:
-
-```
-$ node ./node_modules/esprint/build/cli.js [opts]
-```
+Arthur Lee ([@compid](https://twitter.com/compid))
+Allen Kleiner ([@AK34_](https://twitter.com/AK34_))
