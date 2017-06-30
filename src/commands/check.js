@@ -19,11 +19,11 @@ export const check = (options) => {
   const filePaths = flatten(paths.map(globPath => glob.sync(globPath)));
   // filter out the files that we tell eslint to ignore
   const nonIgnoredFilePaths = filePaths.filter((filePath) => {
-    return !(eslint.isPathIgnored(path.join(ROOT_DIR, filePath)) || filePath.indexOf('eslint') !== -1);
+    return !(eslint.isPathIgnored(path.join(rcPath, filePath)) || filePath.indexOf('eslint') !== -1);
   });
 
 
-  lintRunner.run({ cwd: ROOT_DIR }, nonIgnoredFilePaths)
+  lintRunner.run({ cwd: rcPath }, nonIgnoredFilePaths)
     .then((results) => {
       const records = results.records.filter((record) => {
         return record.warningCount > 0 || record.errorCount > 0;
