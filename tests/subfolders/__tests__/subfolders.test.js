@@ -31,8 +31,6 @@ test('Properly lints and returns errors with server', () => {
 test('Properly lints and returns errors without server', () => {
   const results = runEsprint(path.join(__dirname, '../folder'), 'check');
   const expectedError = expect.stringContaining('error  Unexpected var, use let or const instead  no-var');
-  // expect(results.error).toBeDefined();
-  console.log(results);
   expect(results.error.stdout.toString()).toEqual(expectedError);
   expect(getPid()).toBeUndefined();
 });
