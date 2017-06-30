@@ -4,15 +4,15 @@ import { CLIEngine } from 'eslint';
 import LintRunner from '../LintRunner';
 import { flatten } from '../util';
 
-const ROOT_DIR = process.cwd();
-const eslint = new CLIEngine({ cwd: ROOT_DIR });
-
 export const check = (options) => {
   const {
     workers,
     paths,
-    json
+    json,
+    rcPath,
   } = options;
+
+  const eslint = new CLIEngine({ cwd: rcPath });
 
   const lintRunner = new LintRunner(workers);
 
