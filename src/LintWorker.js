@@ -1,14 +1,9 @@
 import { CLIEngine } from 'eslint';
 
-const lintFile = (config, hash, fileArg) => {
+const lintFile = (config, fileArg) => {
   if (!Array.isArray(fileArg)) {
     fileArg = [fileArg];
   }
-
-  // Store in a filename-based cache file
-  config = Object.assign({}, config, {
-    cacheLocation: './.eslintcachedir/esprint.cache.' + hash
-  });
 
   const eslint = new CLIEngine(config);
   const report = eslint.executeOnFiles(fileArg);
@@ -21,6 +16,6 @@ const lintFile = (config, hash, fileArg) => {
 };
 
 module.exports = (options, callback) => {
-  const results = lintFile(options.config, options.hash, options.fileArg);
+  const results = lintFile(options.config, options.fileArg);
   callback(null, results);
 };

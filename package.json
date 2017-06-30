@@ -1,6 +1,6 @@
 {
   "name": "esprint",
-  "version": "0.4.0-beta.9",
+  "version": "0.4.0-beta.10",
   "description": "Parallelized eslint",
   "main": "index.js",
   "license": "Apache-2.0",

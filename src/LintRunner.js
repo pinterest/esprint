@@ -21,7 +21,6 @@ export default class LintRunner {
       files.map((file) => {
         return that.workers({
           config: config,
-          hash: 'foo',
           fileArg: file
         });
       })
