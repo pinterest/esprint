@@ -1,0 +1,12 @@
+{
+  "port": 5004,
+  "workers": 1,
+  "paths": [
+    "*.js",
+    "folder/*.js"
+  ],
+
+  "ignored": [
+    "**/node_modules/**/*"
+  ]
+}

@@ -4,26 +4,25 @@ import { CLIEngine } from 'eslint';
 import LintRunner from '../LintRunner';
 import { flatten } from '../util';
 
-const ROOT_DIR = process.cwd();
-const eslint = new CLIEngine({ cwd: ROOT_DIR });
-
 export const check = (options) => {
   const {
     workers,
     paths,
-    json
+    json,
+    rcPath,
   } = options;
 
   const lintRunner = new LintRunner(workers);
+  const rcDir = path.dirname(rcPath);
+  const eslint = new CLIEngine({ cwd: rcDir });
 
-  const filePaths = flatten(paths.map(globPath => glob.sync(globPath)));
+  const filePaths = flatten(paths.map(globPath => glob.sync(globPath, { cwd: rcDir })));
   // filter out the files that we tell eslint to ignore
   const nonIgnoredFilePaths = filePaths.filter((filePath) => {
-    return !(eslint.isPathIgnored(path.join(ROOT_DIR, filePath)) || filePath.indexOf('eslint') !== -1);
+    return !(eslint.isPathIgnored(path.join(rcDir, filePath)) || filePath.indexOf('eslint') !== -1);
   });
 
-
-  lintRunner.run({ cwd: ROOT_DIR }, nonIgnoredFilePaths)
+  lintRunner.run({ cwd: rcDir }, nonIgnoredFilePaths)
     .then((results) => {
       const records = results.records.filter((record) => {
         return record.warningCount > 0 || record.errorCount > 0;
