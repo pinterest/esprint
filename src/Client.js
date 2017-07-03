@@ -10,7 +10,7 @@ export default class Client {
     this.formatter = json ? eslint.getFormatter('json') : eslint.getFormatter();
   }
 
-  connect = () => {
+  connect() {
     const d = dnode.connect(this.port);
     const formatter = this.formatter;
     d.on('remote', function(remote) {
