@@ -57,7 +57,10 @@ export default class Server {
       process.send({message: 'Reading files to be linted...[this may take a little bit]'});
       let filePaths = [];
       for (let i = 0; i < paths.length; i++) {
-        const files = glob.sync(paths[i], {});
+        const files = glob.sync(paths[i], {
+          cwd: root,
+          absolute: true,
+        });
         files.forEach((file) => {
           filePaths.push(file);
         });
@@ -71,7 +74,10 @@ export default class Server {
       if (filepath.indexOf('.eslintrc') !== -1) {
         this.cache = {};
         for (let i = 0; i < paths.length; i++) {
-          const files = glob.sync(paths[i], {});
+          const files = glob.sync(paths[i], {
+            cwd: root,
+            absolute: true,
+          });
           files.forEach((file) => {
             filePaths.push(file);
           });
@@ -105,7 +111,7 @@ export default class Server {
   }
 
   lintFile(file) {
-    if (eslint.isPathIgnored(path.join(ROOT_DIR, file)) || file.indexOf('eslint') !== -1) {
+    if (eslint.isPathIgnored(file) || file.indexOf('eslint') !== -1) {
       return;
     }
     this.filesToProcess++;
