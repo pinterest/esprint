@@ -4,7 +4,7 @@ import { isPortTaken } from '../util';
 import { clearLine } from '../cliUtils';
 import Client from '../Client';
 
-export const connect = (options, eslint) => {
+export const connect = (options) => {
   const args = [];
   for (const key in options) {
     args.push(`--${key}=${options[key]}`);
@@ -14,7 +14,7 @@ export const connect = (options, eslint) => {
 
   isPortTaken(port).then(isTaken => {
     // start the server if it isn't running
-    const client = new Client(port, eslint);
+    const client = new Client(options);
 
     if (!isTaken) {
       const child = fork(
