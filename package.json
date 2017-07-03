@@ -41,6 +41,7 @@
   },
   "devDependencies": {
     "babel-cli": "^6.24.0",
+    "babel-eslint": "^7.2.3",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-preset-env": "^1.2.2",
     "eslint": "^4.0.0",
