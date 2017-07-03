@@ -12,12 +12,13 @@ export default class Client {
 
   connect = () => {
     const d = dnode.connect(this.port);
+    const formatter = this.formatter;
     d.on('remote', function(remote) {
       setInterval(() => {
         remote.status('', results => {
           if (!results.message) {
             d.end();
-            console.log(this.formatter(results.records));
+            console.log(formatter(results.records));
             process.exit(results && results.errorCount > 0 ? 1 : 0);
           } else {
             clearLine();
