@@ -15,12 +15,11 @@ export default class LintRunner {
     this.workers = promisify(workers);
   }
 
-  run(config, files) {
+  run(files) {
     const that = this;
     return Promise.all(
       files.map((file) => {
         return that.workers({
-          config: config,
           fileArg: file
         });
       })

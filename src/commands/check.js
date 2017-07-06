@@ -16,13 +16,13 @@ export const check = (options) => {
   const rcDir = path.dirname(rcPath);
   const eslint = new CLIEngine({ cwd: rcDir });
 
-  const filePaths = flatten(paths.map(globPath => glob.sync(globPath, { cwd: rcDir })));
+  const filePaths = flatten(paths.map(globPath => glob.sync(globPath, { cwd: rcDir, absolute: true })));
   // filter out the files that we tell eslint to ignore
   const nonIgnoredFilePaths = filePaths.filter((filePath) => {
-    return !(eslint.isPathIgnored(path.join(rcDir, filePath)) || filePath.indexOf('eslint') !== -1);
+    return !(eslint.isPathIgnored(filePath) || filePath.indexOf('eslint') !== -1);
   });
 
-  lintRunner.run({ cwd: rcDir }, nonIgnoredFilePaths)
+  lintRunner.run(nonIgnoredFilePaths)
     .then((results) => {
       const records = results.records.filter((record) => {
         return record.warningCount > 0 || record.errorCount > 0;

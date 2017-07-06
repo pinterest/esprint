@@ -116,7 +116,7 @@ export default class Server {
     }
     this.filesToProcess++;
     const that = this;
-    this.lintRunner.run({ cwd: ROOT_DIR }, [file])
+    this.lintRunner.run([file])
       .then(function(results) {
         const record = results.records[0];
         if (record) {
