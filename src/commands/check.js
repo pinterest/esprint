@@ -28,12 +28,8 @@ export const check = (options) => {
         return record.warningCount > 0 || record.errorCount > 0;
       });
 
-      if (json) {
-        console.log(JSON.stringify(records));
-      } else {
-        const formatter = eslint.getFormatter();
-        console.log(formatter(records));
-      }
+      const formatter = json ? eslint.getFormatter('json') : eslint.getFormatter();
+      console.log(formatter(records));
       process.exit(results && results.errorCount > 0 ? 1 : 0);
     });
 };
