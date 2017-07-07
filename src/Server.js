@@ -90,6 +90,9 @@ export default class Server {
     watcher.on('add', (filepath) => {
       this.lintFile(filepath);
     });
+    watcher.on('delete', (filepath) => {
+      delete this.cache[filepath];
+    });
   }
 
   getResultsFromCache() {
