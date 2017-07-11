@@ -8,7 +8,7 @@ export const check = (options) => {
   const {
     workers,
     paths,
-    json,
+    formatter,
     rcPath,
   } = options;
 
@@ -28,8 +28,8 @@ export const check = (options) => {
         return record.warningCount > 0 || record.errorCount > 0;
       });
 
-      const formatter = json ? eslint.getFormatter('json') : eslint.getFormatter();
-      console.log(formatter(records));
+      const lintFormatter = eslint.getFormatter(formatter);
+      console.log(lintFormatter(records));
       process.exit(results && results.errorCount > 0 ? 1 : 0);
     });
 };

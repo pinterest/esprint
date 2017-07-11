@@ -37,6 +37,11 @@ const getEsprintOptions = (argv) => {
       options.workers = argv.workers;
     }
 
+    // ESLint-specific options
+    if (argv.format || argv.f) {
+      Object.assign(options, {formatter: argv.f ? argv.f : argv.format});
+    }
+
     return options;
   }
 };
@@ -58,9 +63,6 @@ yargs
     if (!options.port) {
       process.exit(1);
     } else {
-      if (argv.json) {
-        Object.assign(options, {json: argv.json});
-      }
       connect(options);
     }
   })
