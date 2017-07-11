@@ -39,7 +39,7 @@ const getEsprintOptions = (argv) => {
 
     // ESLint-specific options
     if (argv.formatter || argv.f) {
-      Object.assign(options, {formatter: argv.formatter});
+      Object.assign(options, {formatter: argv.f ? argv.f : argv.formatter});
     }
 
     return options;
