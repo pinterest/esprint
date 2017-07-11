@@ -3,8 +3,9 @@
 import yargs from 'yargs';
 import fs from 'fs';
 import os from 'os';
+import path from 'path';
 import { stop, check, connect } from './commands/';
-import { findFile } from './util';
+import { findFile, getRandomPort } from './util';
 
 const NUM_CPUS = os.cpus().length;
 const DEFAULT_PORT_NUMBER = 5004;
@@ -12,7 +13,6 @@ const DEFAULT_PORT_NUMBER = 5004;
 const getEsprintOptions = (argv) => {
   const options = {
     workers: NUM_CPUS,
-    port: DEFAULT_PORT_NUMBER,
   };
 
   const filePath = findFile('.esprintrc');
@@ -36,7 +36,6 @@ const getEsprintOptions = (argv) => {
       }
       options.workers = argv.workers;
     }
-
     return options;
   }
 };
@@ -56,12 +55,22 @@ yargs
   .command(['*', 'start'], 'Starts up a background server which listens for file changes.', () => {}, (argv) => {
     const options = getEsprintOptions(argv);
     if (!options.port) {
-      process.exit(1);
-    } else {
-      if (argv.json) {
-        Object.assign(options, {json: argv.json});
+      let port;      
+
+      if (!findFile('.esprint_port')) {
+        port = getRandomPort(); 
+        fs.writeFileSync(`${path.dirname(options.rcPath)}/.esprint_port`, port);
+      } else {
+        port = Number(fs.readFileSync('.esprint_port'));
       }
-      connect(options);
+
+      Object.assign(options, {port: port});
+    } 
+
+    if (argv.json) {
+      Object.assign(options, {json: argv.json});
     }
+    
+    connect(options);
   })
   .help().argv;

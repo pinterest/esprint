@@ -47,6 +47,15 @@ export const isPortTaken = (port) => {
   });
 };
 
+export const getRandomPort = () => {
+  let port;
+  const server = net.createServer()
+    .listen(0, () => port = server.address().port)
+    .close();
+  
+  return port;
+}
+
 /*
  * Walks up a directory until a file is found.
  * @return path - the path where the fileName is found
