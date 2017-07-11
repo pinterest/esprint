@@ -29,7 +29,6 @@ afterEach(() => {
 const esprintrc = `
 {
   "port": 5004 ,
-  "workers": 1,
   "paths": [
     "fixture.js"
   ],
