@@ -4,10 +4,10 @@ import { clearLine } from './cliUtils';
 
 export default class Client {
   constructor(options) {
-    const { port, json } = options;
+    const { port, formatter } = options;
     const eslint = new CLIEngine();
     this.port = port;
-    this.formatter = json ? eslint.getFormatter('json') : eslint.getFormatter();
+    this.formatter = eslint.getFormatter(formatter);
   }
 
   connect() {
