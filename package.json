@@ -11,6 +11,7 @@
     "prepublish": "yarn run build",
     "start": "babel --watch src --out-dir build",
     "deps": "node ./scripts/installDependencies.js",
+    "create-test": "node ./scripts/create-test.js",
     "lint": "eslint src tests"
   },
   "repository": {
@@ -43,6 +44,7 @@
     "babel-cli": "^6.24.0",
     "babel-eslint": "^7.2.3",
     "babel-preset-env": "^1.2.2",
+    "chalk": "^2.0.1",
     "eslint": "^4.0.0",
     "jest": "^20.0.4"
   }
