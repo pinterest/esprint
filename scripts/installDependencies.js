@@ -12,8 +12,10 @@ if (!packageJson) {
   process.exit(0);
 }
 
+const FILE_PREFIX = 'file:';
 const install = 'npm i ';
 const link = 'npm ln '
+
 let dependencies = '';
 
 const devDeps = packageJson['devDependencies'];
@@ -21,8 +23,9 @@ const devDeps = packageJson['devDependencies'];
 for (const key in devDeps) {
   if (key.indexOf('eslint') !== -1) {
     // Manually link file: dependencies
-    if (devDeps[key].startsWith('file:')) {
-      execSync(`${link} ${path.join(dirPath, devDeps[key])}`);
+    if (devDeps[key].startsWith(FILE_PREFIX)) {
+      // Strip the file prefix to get the correct path of the package
+      execSync(`${link} ${path.join(dirPath, devDeps[key].substring(FILE_PREFIX.length))}`);
     } else {
       dependencies += `${key}@${devDeps[key]} `;
     }
