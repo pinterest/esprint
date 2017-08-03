@@ -12,7 +12,7 @@ A sample `.esprintrc` file:
 {
   "paths": [
     "foo/*.js",
-    "bar/**/*.js",
+    "bar/**/*.js"
   ],
   "ignored": [
     "**/node_modules/**/*"
