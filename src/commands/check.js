@@ -10,6 +10,7 @@ export const check = (options) => {
     paths,
     formatter,
     rcPath,
+    maxWarnings,
   } = options;
 
   const lintRunner = new LintRunner(workers);
@@ -30,6 +31,7 @@ export const check = (options) => {
 
       const lintFormatter = eslint.getFormatter(formatter);
       console.log(lintFormatter(records));
-      process.exit(results && results.errorCount > 0 ? 1 : 0);
+      process.exit(results && (results.errorCount > 0 ? 1 : 0
+        || results.warningCount > maxWarnings ? 1 : 0));
     });
 };
