@@ -2,7 +2,7 @@ import workerFarm from 'worker-farm';
 import { promisify, flatten } from './util';
 
 export default class LintRunner {
-  constructor(numThreads) {
+  constructor(numThreads, suppressWarnings) {
     const workers = workerFarm(
       {
         autoStart: true,
@@ -13,6 +13,7 @@ export default class LintRunner {
     );
 
     this.workers = promisify(workers);
+    this.suppressWarnings = suppressWarnings;
   }
 
   run(files) {
@@ -20,7 +21,8 @@ export default class LintRunner {
     return Promise.all(
       files.map((file) => {
         return that.workers({
-          fileArg: file
+          fileArg: file,
+          suppressWarnings: that.suppressWarnings,
         });
       })
     )

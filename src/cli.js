@@ -42,6 +42,8 @@ const getEsprintOptions = (argv) => {
       Object.assign(options, {formatter: argv.f ? argv.f : argv.format});
     }
 
+    options.quiet = !!options.quiet;
+
     return options;
   }
 };

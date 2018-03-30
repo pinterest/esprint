@@ -10,9 +10,10 @@ export const check = (options) => {
     paths,
     formatter,
     rcPath,
+    quiet,
   } = options;
 
-  const lintRunner = new LintRunner(workers);
+  const lintRunner = new LintRunner(workers, quiet);
   const rcDir = path.dirname(rcPath);
   const eslint = new CLIEngine({ cwd: rcDir });
 
