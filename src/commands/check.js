@@ -13,7 +13,7 @@ export const check = (options) => {
     quiet,
   } = options;
 
-  const lintRunner = new LintRunner(workers, quiet);
+  const lintRunner = new LintRunner(workers, !!quiet);
   const rcDir = path.dirname(rcPath);
   const eslint = new CLIEngine({ cwd: rcDir });
 

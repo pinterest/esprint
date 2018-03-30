@@ -42,7 +42,8 @@ const getEsprintOptions = (argv) => {
       Object.assign(options, {formatter: argv.f ? argv.f : argv.format});
     }
 
-    options.quiet = !!options.quiet;
+    // NB: Passing --quiet as a number for compatibility with yargs
+    options.quiet = options.quiet ? 1 : 0;
 
     return options;
   }

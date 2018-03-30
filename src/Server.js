@@ -25,7 +25,7 @@ export default class Server {
 
     this.cache = {};
     this.filesToProcess = 0;
-    this.lintRunner = new LintRunner(workers, quiet);
+    this.lintRunner = new LintRunner(workers, !!quiet);
 
     const rootDir = path.dirname(this.rcPath);
 
