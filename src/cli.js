@@ -43,7 +43,7 @@ const getEsprintOptions = (argv) => {
     }
 
     // NB: Passing --quiet as a number for compatibility with yargs
-    options.quiet = options.quiet ? 1 : 0;
+    options.quiet = options.quiet || argv.quiet ? 1 : 0;
 
     return options;
   }
