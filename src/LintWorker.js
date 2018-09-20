@@ -12,5 +12,9 @@ const lintFile = (fileArg) => {
 
 module.exports = (options, callback) => {
   const results = lintFile(options.fileArg);
-  callback(null, results);
+  if (options.suppressWarnings) {
+    callback(null, CLIEngine.getErrorResults(results));
+  } else {
+    callback(null, results);
+  }
 };
