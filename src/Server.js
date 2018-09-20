@@ -17,6 +17,7 @@ export default class Server {
       paths,
       ignored,
       rcPath,
+      quiet,
     } = options;
 
     this.port = port;
@@ -24,7 +25,7 @@ export default class Server {
 
     this.cache = {};
     this.filesToProcess = 0;
-    this.lintRunner = new LintRunner(workers);
+    this.lintRunner = new LintRunner(workers, !!quiet);
 
     const rootDir = path.dirname(this.rcPath);
 
