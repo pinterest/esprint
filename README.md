@@ -30,6 +30,7 @@ Options:
 |**`port`**|`{Number}`|(optional) Run the esprint background server on a specific port|
 |**`formatter`**|`{string}`|(optional) Use a specific output format - default: stylish|
 |**`quiet`**|`{boolean}`|(optional) Report errors only - default: false|
+|**`maxWarnings`**|`{number}`|(optional) The max number of warnings that should trigger a failure. The default is to not fail on warnings|
 
 ## Usage
 

@@ -1,0 +1,12 @@
+
+{
+  "port": 5004 ,
+  "paths": [
+    "fixture.js"
+  ],
+
+  "ignored": [
+    "**/node_modules/**/*"
+  ],
+  "maxWarnings": 0
+}
