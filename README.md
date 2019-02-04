@@ -56,6 +56,8 @@ To kill the esprint server in the background, use the following command:
 $ esprint stop
 ```
 
+This will also clear the cache.
+
 You can run `esprint` from any subdirectory that `.esprintrc` is located in, and it will still properly lint all files as specified.
 
 ### CI Mode
