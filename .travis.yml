@@ -8,7 +8,7 @@ addons:
     packages:
       - g++-4.8
 node_js:
-  - "4"
+  - "6"
 sudo: required
 before_install:
   - npm i -g yarn
