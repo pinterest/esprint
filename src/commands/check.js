@@ -12,9 +12,10 @@ export const check = (options) => {
     rcPath,
     maxWarnings,
     quiet,
+    fix
   } = options;
 
-  const lintRunner = new LintRunner(workers, !!quiet);
+  const lintRunner = new LintRunner(workers, !!quiet, fix);
   const rcDir = path.dirname(rcPath);
   const eslint = new CLIEngine({ cwd: rcDir });
 

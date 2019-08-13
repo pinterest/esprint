@@ -66,6 +66,21 @@ In CI environments, it is not always appropriate (or necessary) to start a backg
 $ esprint check
 ```
 
+### CLI Options
+
+#### Auto fix
+
+To use the eslint auto fix feature, add `--fix` when starting the server
+
+```
+$ esprint --fix
+```
+
+or when running in CI mode
+```
+$ esprint check --fix
+```
+
 ## Developing for esprint
 
 Refer to [CONTRIBUTING](https://github.com/pinterest/esprint/blob/master/CONTRIBUTING.md)
