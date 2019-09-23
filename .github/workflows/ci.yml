@@ -1,0 +1,26 @@
+name: Main workflow (PR)
+
+on: [pull_request]
+
+jobs:
+  test:
+    name: Lint & run tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node_version: [8]
+    steps:
+      - name: Checkout the Git repository
+        uses: actions/checkout@v1
+      - name: Define node versions
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node_version }}
+      - name: Install dependencies
+        run: |
+          npm i -g yarn
+          yarn
+      - name: Lint
+        run: yarn lint
+      - name: Run tests
+        run: yarn test

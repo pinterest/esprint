@@ -24,28 +24,30 @@
   },
   "homepage": "https://github.com/pinterest/esprint#readme",
   "dependencies": {
-    "dnode": "^1.2.2",
-    "fb-watchman": "^2.0.0",
-    "glob": "^7.1.1",
-    "sane": "^1.6.0",
-    "worker-farm": "^1.3.1",
-    "yargs": "^8.0.1"
+    "dnode": "https://github.com/christianvuerings/dnode/#e08e620b18c9086d47fe68e08328b19465c62fb7",
+    "glob": "^7.1.4",
+    "sane": "^4.1.0",
+    "worker-farm": "^1.7.0",
+    "yargs": "^14.0.0"
   },
   "peerDependencies": {
     "eslint": ">=3"
   },
   "engines": {
-    "node": ">=4"
+    "node": ">=8"
   },
   "bin": {
     "esprint": "build/cli.js"
   },
   "devDependencies": {
-    "babel-cli": "^6.24.0",
-    "babel-eslint": "^7.2.3",
-    "babel-preset-env": "^1.2.2",
+    "@babel/cli": "^7.0.0",
+    "@babel/core": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-eslint": "^9.0.0",
+    "babel-jest": "^23.4.2",
     "chalk": "^2.0.1",
     "eslint": "^4.0.0",
-    "jest": "^20.0.4"
+    "jest": "^24.9.0"
   }
 }
