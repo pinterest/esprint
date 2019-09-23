@@ -34,7 +34,6 @@ jobs:
           ./configure
           make
           sudo make install
-          watchman --version
           cd ..
       - name: Lint
         run: yarn lint
