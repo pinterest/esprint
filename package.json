@@ -54,7 +54,7 @@
     "babel-eslint": "^9.0.0",
     "babel-jest": "^23.4.2",
     "chalk": "^2.0.1",
-    "eslint": "^4.19.1",
+    "eslint": "^6.4.0",
     "jest": "^24.9.0"
   }
 }
