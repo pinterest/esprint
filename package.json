@@ -26,7 +26,8 @@
   "resolutions": {
     "js-yaml": "^3.13.1",
     "randomatic": ">=3.0.0",
-    "sshpk": "^1.16.1"
+    "sshpk": "^1.16.1",
+    "lodash": "^4.17.15"
   },
   "dependencies": {
     "dnode": "https://github.com/christianvuerings/dnode/#e08e620b18c9086d47fe68e08328b19465c62fb7",
