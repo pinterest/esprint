@@ -27,14 +27,6 @@ jobs:
           set -x;
           npm i -g yarn
           yarn
-          git clone https://github.com/facebook/watchman.git
-          cd watchman/
-          git checkout v4.9.0
-          ./autogen.sh
-          ./configure
-          make
-          sudo make install
-          cd ..
       - name: Lint
         run: yarn lint
       - name: Run tests
