@@ -52,7 +52,7 @@ export default class Server {
       glob: paths,
       ignored: ignored,
       dot: true,
-      watchman: true,
+      watchman: process.env.NODE_ENV !== 'test',
     });
 
     watcher.on('ready', () => {
