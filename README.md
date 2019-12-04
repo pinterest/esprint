@@ -1,3 +1,9 @@
+# Quizlet fork
+
+Why?
+
+- `dnode` uses `weak`, which is not compatible with node 12. This fork uses a different version of `dnode`, which uses `weak-napi` instead. See https://github.com/TooTallNate/node-weak/issues/99, https://github.com/substack/dnode/pull/194.
+
 # esprint - a fast eslint runner [![Build Status](https://img.shields.io/travis/pinterest/esprint/master.svg?style=flat)](https://travis-ci.org/pinterest/esprint) [![npm version](https://img.shields.io/npm/v/esprint.svg?style=flat)](https://www.npmjs.com/package/esprint)
 
 esprint (pronounced E-S-sprint) speeds up eslint by running the linting engine across multiple threads.
@@ -10,27 +16,22 @@ A sample `.esprintrc` file:
 
 ```json
 {
-  "paths": [
-    "foo/*.js",
-    "bar/**/*.js"
-  ],
-  "ignored": [
-    "**/node_modules/**/*"
-  ],
+  "paths": ["foo/*.js", "bar/**/*.js"],
+  "ignored": ["**/node_modules/**/*"],
   "port": 5004
 }
 ```
 
 Options:
 
-|Name|Type|Description|
-|:--:|:--:|:----------|
-|**`paths`**|`{Array<String>}`|Glob-style paths for files to include when linting|
-|**`ignored`**|`{Array<String>}`|Glob-style paths to ignore (not watch) during dev mode for better performance (`.eslintignore` applies as normal)|
-|**`port`**|`{Number}`|(optional) Run the esprint background server on a specific port|
-|**`formatter`**|`{string}`|(optional) Use a specific output format - default: stylish|
-|**`quiet`**|`{boolean}`|(optional) Report errors only - default: false|
-|**`maxWarnings`**|`{number}`|(optional) The max number of warnings that should trigger a failure. The default is to not fail on warnings|
+|       Name        |       Type        | Description                                                                                                       |
+| :---------------: | :---------------: | :---------------------------------------------------------------------------------------------------------------- |
+|    **`paths`**    | `{Array<String>}` | Glob-style paths for files to include when linting                                                                |
+|   **`ignored`**   | `{Array<String>}` | Glob-style paths to ignore (not watch) during dev mode for better performance (`.eslintignore` applies as normal) |
+|    **`port`**     |    `{Number}`     | (optional) Run the esprint background server on a specific port                                                   |
+|  **`formatter`**  |    `{string}`     | (optional) Use a specific output format - default: stylish                                                        |
+|    **`quiet`**    |    `{boolean}`    | (optional) Report errors only - default: false                                                                    |
+| **`maxWarnings`** |    `{number}`     | (optional) The max number of warnings that should trigger a failure. The default is to not fail on warnings       |
 
 ## Usage
 
@@ -77,6 +78,7 @@ $ esprint --fix
 ```
 
 or when running in CI mode
+
 ```
 $ esprint check --fix
 ```
@@ -89,4 +91,4 @@ Refer to [CONTRIBUTING](https://github.com/pinterest/esprint/blob/master/CONTRIB
 
 Arthur Lee ([@compid](https://twitter.com/compid))
 
-Allen Kleiner ([@AK34_](https://twitter.com/AK34_))
+Allen Kleiner ([@AK34\_](https://twitter.com/AK34_))
