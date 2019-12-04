@@ -10,9 +10,12 @@ export const check = (options) => {
     paths,
     formatter,
     rcPath,
+    maxWarnings,
+    quiet,
+    fix
   } = options;
 
-  const lintRunner = new LintRunner(workers);
+  const lintRunner = new LintRunner(workers, !!quiet, fix);
   const rcDir = path.dirname(rcPath);
   const eslint = new CLIEngine({ cwd: rcDir });
 
@@ -30,6 +33,7 @@ export const check = (options) => {
 
       const lintFormatter = eslint.getFormatter(formatter);
       console.log(lintFormatter(records));
-      process.exit(results && results.errorCount > 0 ? 1 : 0);
+      process.exit(results && (results.errorCount > 0 ? 1 : 0
+        || results.warningCount > maxWarnings ? 1 : 0));
     });
 };

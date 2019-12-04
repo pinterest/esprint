@@ -17,6 +17,8 @@ export default class Server {
       paths,
       ignored,
       rcPath,
+      quiet,
+      fix
     } = options;
 
     this.port = port;
@@ -24,7 +26,7 @@ export default class Server {
 
     this.cache = {};
     this.filesToProcess = 0;
-    this.lintRunner = new LintRunner(workers);
+    this.lintRunner = new LintRunner(workers, !!quiet, fix);
 
     const rootDir = path.dirname(this.rcPath);
 
@@ -50,7 +52,7 @@ export default class Server {
       glob: paths,
       ignored: ignored,
       dot: true,
-      watchman: true,
+      watchman: process.env.NODE_ENV !== 'test',
     });
 
     watcher.on('ready', () => {
