@@ -30,7 +30,7 @@
     "lodash": "^4.17.15"
   },
   "dependencies": {
-    "dnode": "https://github.com/christianvuerings/dnode/#e08e620b18c9086d47fe68e08328b19465c62fb7",
+    "dnode": "https://github.com/christianvuerings/dnode#e08e620b18c9086d47fe68e08328b19465c62fb7",
     "fb-watchman": "^2.0.0",
     "glob": "^7.1.4",
     "sane": "^4.1.0",
