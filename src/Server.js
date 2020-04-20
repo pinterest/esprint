@@ -1,4 +1,4 @@
-import dnode from 'dnode';
+import dnode from 'dnode-weak-napi';
 import path from 'path';
 import sane from 'sane';
 import glob from 'glob';

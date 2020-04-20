@@ -1,4 +1,4 @@
-import dnode from 'dnode';
+import dnode from 'dnode-weak-napi';
 import { CLIEngine } from 'eslint';
 import { clearLine } from './cliUtils';
 
