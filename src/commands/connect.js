@@ -6,22 +6,23 @@ import Client from '../Client';
 
 export const connect = (options) => {
   const args = [];
+  // eslint-disable-next-line
   for (const key in options) {
     args.push(`--${key}=${options[key]}`);
   }
 
   const port = options.port;
 
-  isPortTaken(port).then(isTaken => {
+  isPortTaken(port).then((isTaken) => {
     // start the server if it isn't running
     const client = new Client(options);
 
     if (!isTaken) {
-      const child = fork(
-        require.resolve('../startServer.js'), args, { silent: true }
-      );
+      const child = fork(require.resolve('../startServer.js'), args, {
+        silent: true,
+      });
 
-      child.on('message', message => {
+      child.on('message', (message) => {
         if (message.server) {
           // Wait for the server to start before connecting
           client.connect();
