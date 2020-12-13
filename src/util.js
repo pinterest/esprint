@@ -2,32 +2,6 @@ import net from 'net';
 import fs from 'fs';
 import path from 'path';
 
-export const promisify = (fn) => {
-  return function() {
-    var args = Array.prototype.slice.call(arguments);
-    return new Promise(function(resolve, reject) {
-      args.push(function(err, res) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(res);
-        }
-      });
-
-      fn.apply(this, args);
-    });
-  };
-};
-
-export const flatten = (array) => {
-  return array.reduce(
-    function(acc, curr) {
-      return curr.concat(acc);
-    },
-    []
-  );
-};
-
 export const isPortTaken = (port) => {
   return new Promise((resolve, reject) => {
     const tester = net

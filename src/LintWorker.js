@@ -10,11 +10,13 @@ const lintFile = (fileArg, fix) => {
   return report.results;
 };
 
-module.exports = (options, callback) => {
-  const results = lintFile(options.fileArg, options.fix);
-  if (options.suppressWarnings) {
-    callback(null, CLIEngine.getErrorResults(results));
-  } else {
-    callback(null, results);
-  }
-};
+export async function worker({
+  fileArg,
+  fix,
+  suppressWarnings
+}) {
+  return new Promise((resolve) => {
+    const results = lintFile(fileArg, fix);
+    resolve(suppressWarnings ? CLIEngine.getErrorResults(results) : results);
+  });
+}

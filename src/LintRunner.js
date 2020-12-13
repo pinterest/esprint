@@ -1,18 +1,16 @@
-import workerFarm from 'worker-farm';
-import { promisify, flatten } from './util';
+import JestWorker from 'jest-worker';
 
 export default class LintRunner {
   constructor(numThreads, suppressWarnings, fix) {
-    const workers = workerFarm(
+    this.worker = new JestWorker(
+      require.resolve('./LintWorker'),
       {
-        autoStart: true,
-        maxConcurrentCallsPerWorker: Infinity,
-        maxConcurrentWorkers: numThreads,
-      },
-      require.resolve('./LintWorker')
+        exposedMethods: ['worker'],
+        numWorkers: numThreads,
+        enableWorkerThreads: true,
+      }
     );
 
-    this.workers = promisify(workers);
     this.suppressWarnings = suppressWarnings;
     this.fix = fix;
   }
@@ -21,7 +19,7 @@ export default class LintRunner {
     const that = this;
     return Promise.all(
       files.map((file) => {
-        return that.workers({
+        return that.worker.worker({
           fileArg: file,
           suppressWarnings: that.suppressWarnings,
           fix: that.fix,
@@ -29,7 +27,7 @@ export default class LintRunner {
       })
     )
       .then(results => {
-        const records = flatten(results);
+        const records = (results || []).flat();
 
         // produce a sum of total num of errors/warnings
         const { errorCount, warningCount } = records.reduce((a, b) => ({
