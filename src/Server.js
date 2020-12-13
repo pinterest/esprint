@@ -1,7 +1,7 @@
+import chokidar from 'chokidar';
 import glob from 'glob';
 import jayson from 'jayson';
 import path from 'path';
-import sane from 'sane';
 import LintRunner from './LintRunner';
 import { CLIEngine } from 'eslint';
 
@@ -50,11 +50,11 @@ export default class Server {
   }
 
   _setupWatcher(root, paths, ignored) {
-    const watcher = sane(root, {
-      glob: paths,
+    const watcher = chokidar.watch(paths, {
+      disableGlobbing: true,
       ignored: ignored,
-      dot: true,
-      watchman: process.env.NODE_ENV !== 'test',
+      ignoreInitial: true,
+      ignorePermissionErrors: true,
     });
 
     watcher.on('ready', () => {

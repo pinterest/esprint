@@ -24,11 +24,10 @@
   },
   "homepage": "https://github.com/pinterest/esprint#readme",
   "dependencies": {
-    "fb-watchman": "^2.0.1",
+    "chokidar": "^3.4.3",
     "glob": "^7.1.6",
     "jayson": "^3.3.4",
     "jest-worker": "^26.6.2",
-    "sane": "^4.1.0",
     "yargs": "^16.2.0"
   },
   "peerDependencies": {
