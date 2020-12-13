@@ -1,7 +1,7 @@
-import dnode from 'dnode-weak-napi';
+import glob from 'glob';
+import jayson from 'jayson';
 import path from 'path';
 import sane from 'sane';
-import glob from 'glob';
 import LintRunner from './LintRunner';
 import { CLIEngine } from 'eslint';
 
@@ -32,19 +32,21 @@ export default class Server {
 
     this._setupWatcher(rootDir, paths.split(','), ignored.split(','));
 
-    const server = dnode({
-      status: (param, cb) => {
-        if (this.filesToProcess === 0) {
-          return cb(this.getResultsFromCache());
+    const that = this;
+
+    const server = jayson.server({
+      status: function(args, cb) {
+        if (that.filesToProcess === 0) {
+          cb(null, that.getResultsFromCache());
         } else {
-          return cb({message: `Linting...${this.filesToProcess} left to lint`});
+          cb(null, {message: `Linting...${that.filesToProcess} left to lint`});
         }
       }
     });
 
     process.send({server: server});
 
-    server.listen(this.port);
+    server.http().listen(this.port);
   }
 
   _setupWatcher(root, paths, ignored) {
