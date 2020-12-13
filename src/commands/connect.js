@@ -18,11 +18,13 @@ export const connect = (options) => {
     const client = new Client(options);
 
     if (!isTaken) {
-      const child = fork(require.resolve('../startServer.js'), args, {
-        silent: true,
-      });
+      const child = fork(
+        require.resolve('../startServer.js'), args, {
+          silent: true
+        }
+      );
 
-      child.on('message', (message) => {
+      child.on('message', message => {
         if (message.server) {
           // Wait for the server to start before connecting
           client.connect();
