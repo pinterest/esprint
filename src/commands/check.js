@@ -2,7 +2,6 @@ import glob from 'glob';
 import path from 'path';
 import { CLIEngine } from 'eslint';
 import LintRunner from '../LintRunner';
-import { flatten } from '../util';
 
 export const check = (options) => {
   const {
@@ -19,7 +18,7 @@ export const check = (options) => {
   const rcDir = path.dirname(rcPath);
   const eslint = new CLIEngine({ cwd: rcDir });
 
-  const filePaths = flatten(paths.map(globPath => glob.sync(globPath, { cwd: rcDir, absolute: true })));
+  const filePaths = (paths.map(globPath => glob.sync(globPath, { cwd: rcDir, absolute: true })) || []).flat();
   // filter out the files that we tell eslint to ignore
   const nonIgnoredFilePaths = filePaths.filter((filePath) => {
     return !(eslint.isPathIgnored(filePath) || filePath.indexOf('eslint') !== -1);

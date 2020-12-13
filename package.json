@@ -30,18 +30,18 @@
     "sshpk": "^1.16.1"
   },
   "dependencies": {
-		"fb-watchman": "^2.0.0",
+    "fb-watchman": "^2.0.0",
     "glob": "^7.1.4",
-		"jayson": "^3.3.4",
+    "jayson": "^3.3.4",
+    "jest-worker": "^26.6.2",
     "sane": "^4.1.0",
-    "worker-farm": "^1.7.0",
     "yargs": "^14.0.0"
   },
   "peerDependencies": {
     "eslint": ">=3"
   },
   "engines": {
-    "node": ">=8"
+    "node": ">=12"
   },
   "bin": {
     "esprint": "build/cli.js"
