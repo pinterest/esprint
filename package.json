@@ -1,6 +1,6 @@
 {
   "name": "esprint",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Parallelized eslint",
   "main": "index.js",
   "license": "Apache-2.0",
@@ -24,10 +24,11 @@
   },
   "homepage": "https://github.com/pinterest/esprint#readme",
   "dependencies": {
-    "chokidar": "^3.4.3",
+    "fb-watchman": "^2.0.1",
     "glob": "^7.1.6",
     "jayson": "^3.3.4",
     "jest-worker": "^26.6.2",
+    "sane": "^4.1.0",
     "yargs": "^16.2.0"
   },
   "peerDependencies": {
