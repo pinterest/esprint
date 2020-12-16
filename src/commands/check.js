@@ -8,6 +8,7 @@ export const check = (options) => {
     workers,
     paths,
     formatter,
+    ignored,
     rcPath,
     maxWarnings,
     quiet,
@@ -18,7 +19,7 @@ export const check = (options) => {
   const rcDir = path.dirname(rcPath);
   const eslint = new CLIEngine({ cwd: rcDir });
 
-  const filePaths = (paths.map(globPath => glob.sync(globPath, { cwd: rcDir, absolute: true })) || []).flat();
+  const filePaths = (paths.map(globPath => glob.sync(globPath, { cwd: rcDir, absolute: true, ignore: ignored })) || []).flat();
   // filter out the files that we tell eslint to ignore
   const nonIgnoredFilePaths = filePaths.filter((filePath) => {
     return !(eslint.isPathIgnored(filePath) || filePath.indexOf('eslint') !== -1);
