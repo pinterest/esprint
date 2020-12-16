@@ -64,6 +64,7 @@ export default class Server {
         const files = glob.sync(paths[i], {
           cwd: root,
           absolute: true,
+          ignore: ignored
         });
         files.forEach((file) => {
           filePaths.push(file);
@@ -81,6 +82,7 @@ export default class Server {
           const files = glob.sync(paths[i], {
             cwd: root,
             absolute: true,
+            ignore: ignored
           });
           files.forEach((file) => {
             filePaths.push(file);
