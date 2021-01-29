@@ -115,7 +115,7 @@ export default class Server {
         dot: true,
         watchman: process.env.NODE_ENV !== 'test' && watchman,
       });
-      dependenciesWatcher.on('change', (filepath) => {
+      const onChange = (filepath) => {
         if (dependentsOf[filepath] && dependentsOf[filepath].length > 0) {
           dependentsOf[filepath].forEach((path) => {
             updateDependencies(path);
@@ -123,6 +123,12 @@ export default class Server {
           });
           updateDependenciesWatcher();
         }
+      };
+      dependenciesWatcher.on('change', onChange);
+      dependenciesWatcher.on('delete', (filepath) => {
+        onChange(filepath);
+        delete dependentsOf[filepath];
+        updateDependenciesWatcher();
       });
     };
 
