@@ -60,7 +60,7 @@ export default class Server {
       }
     });
 
-    process.send({server: server});
+    if(process.send) process.send({server: server});
 
     server.http().listen(this.port);
   }
@@ -101,9 +101,9 @@ export default class Server {
         webpackConfig,
         tsConfig,
         filter: path => !micromatch.some(path, ignoredArr, { dot: true }) && !eslint.isPathIgnored(path) && path.indexOf('eslint') === -1,
-      }).concat(GLOBAL_DEPENDENCIES);
-      dependenciesOf[filename].forEach((path) => {
-        dependentsOf[path] = [...(dependentsOf[path] || []), filename];
+      }).concat(GLOBAL_DEPENDENCIES).map((abs) => path.relative(root, abs));
+      dependenciesOf[filename].forEach((file) => {
+        dependentsOf[file] = [...(dependentsOf[file] || []), filename];
       });
     };
 
@@ -116,11 +116,13 @@ export default class Server {
         watchman: process.env.NODE_ENV !== 'test' && watchman,
       });
       dependenciesWatcher.on('change', (filepath) => {
-        (dependentsOf[filepath] || []).forEach((path) => {
-          updateDependencies(path);
-          this.lintFile(path);
-        });
-        updateDependenciesWatcher();
+        if (dependentsOf[filepath] && dependentsOf[filepath].length > 0) {
+          dependentsOf[filepath].forEach((path) => {
+            updateDependencies(path);
+            this.lintFile(path);
+          });
+          updateDependenciesWatcher();
+        }
       });
     };
 
@@ -134,7 +136,7 @@ export default class Server {
     let dependenciesWatcher = null;
 
     globWatcher.on('ready', () => {
-      process.send({message: 'Reading files to be linted...[this may take a little bit]'});
+      if(process.send) process.send({message: 'Reading files to be linted...[this may take a little bit]'});
       const allFiles = new Set();
       for (const path of pathsArr) {
         const files = glob.sync(path, {
