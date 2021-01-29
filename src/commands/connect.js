@@ -6,9 +6,8 @@ import Client from '../Client';
 
 export const connect = (options) => {
   const args = [];
-  // eslint-disable-next-line
-  for (const key in options) {
-    args.push(`--${key}=${options[key]}`);
+  for (const [key, value] of Object.entries(options)) {
+    args.push(`--${key}=${value}`);
   }
 
   const port = options.port;
@@ -20,7 +19,8 @@ export const connect = (options) => {
     if (!isTaken) {
       const child = fork(
         require.resolve('../startServer.js'), args, {
-          silent: true
+          silent: true,
+          stdio: process.env.NODE_ENV !== 'test' ? 'inherit' : 'pipe',
         }
       );
 

@@ -1,5 +1,7 @@
+import dependencyTree from 'dependency-tree';
 import glob from 'glob';
 import jayson from 'jayson';
+import micromatch from 'micromatch';
 import path from 'path';
 import sane from 'sane';
 import LintRunner from './LintRunner';
@@ -9,16 +11,30 @@ const ROOT_DIR = process.cwd();
 
 const eslint = new CLIEngine({ cwd: ROOT_DIR });
 
+const GLOBAL_DEPENDENCIES = Object.freeze([
+  'package-lock.json',
+  'yarn.lock',
+  '.eslintrc',
+  '.eslintrc.yml',
+  '.eslintrc.yaml',
+  '.eslintrc.js',
+  '.eslintrc.cjs',
+  '.eslintrc.json',
+  'package.json'
+]);
+
+const delay = (amount) => new Promise(resolve => setTimeout(resolve, amount));
+
+const MAX_ATTEMPTS = 8;
+
 export default class Server {
   constructor(options) {
     const {
       workers,
       port,
-      paths,
-      ignored,
       rcPath,
       quiet,
-      fix
+      fix,
     } = options;
 
     this.port = port;
@@ -30,12 +46,12 @@ export default class Server {
 
     const rootDir = path.dirname(this.rcPath);
 
-    this._setupWatcher(rootDir, paths.split(','), ignored.split(','));
+    this._setupWatcher(rootDir, options);
 
     const that = this;
 
     const server = jayson.server({
-      status: function(args, cb) {
+      status: function(_, cb) {
         if (that.filesToProcess === 0) {
           cb(null, that.getResultsFromCache());
         } else {
@@ -49,55 +65,101 @@ export default class Server {
     server.http().listen(this.port);
   }
 
-  _setupWatcher(root, paths, ignored) {
-    const watcher = sane(root, {
-      glob: paths,
-      ignored: ignored,
+  _setupWatcher(root, options) {
+    const {
+      paths,
+      ignored,
+      requireConfig,
+      webpackConfig,
+      tsConfig,
+      watchman,
+    } = options;
+    const ignoredArr = ignored.split(',');
+    const pathsArr = paths.split(',');
+
+    const dependentsOf = {};
+    const dependenciesOf = {};
+
+    const removeDependencies = (filename) => {
+      (dependenciesOf[filename] || []).forEach((path) => {
+        const updatedDependents = (dependentsOf[path] || []).filter((path2) => path2 !== filename);
+        if (updatedDependents.length > 0) {
+          dependentsOf[path] = updatedDependents;
+        } else {
+          delete dependentsOf[path];
+        }
+      });
+      delete dependenciesOf[filename];
+    };
+
+    const updateDependencies = (filename) => {
+      removeDependencies(filename);
+      dependenciesOf[filename] = dependencyTree.toList({
+        filename,
+        directory: root,
+        requireConfig,
+        webpackConfig,
+        tsConfig,
+        filter: path => !micromatch.some(path, ignoredArr, { dot: true }) && !eslint.isPathIgnored(path) && path.indexOf('eslint') === -1,
+      }).concat(GLOBAL_DEPENDENCIES);
+      dependenciesOf[filename].forEach((path) => {
+        dependentsOf[path] = [...(dependentsOf[path] || []), filename];
+      });
+    };
+
+    const updateDependenciesWatcher = () => {
+      if (dependenciesWatcher) dependenciesWatcher.close();
+      dependenciesWatcher = sane(root, {
+        glob: Object.keys(dependentsOf),
+        ignored: ignoredArr,
+        dot: true,
+        watchman: process.env.NODE_ENV !== 'test' && watchman,
+      });
+      dependenciesWatcher.on('change', (filepath) => {
+        (dependentsOf[filepath] || []).forEach((path) => {
+          updateDependencies(path);
+          this.lintFile(path);
+        });
+        updateDependenciesWatcher();
+      });
+    };
+
+    const globWatcher = sane(root, {
+      glob: pathsArr,
+      ignored: ignoredArr,
       dot: true,
-      watchman: process.env.NODE_ENV !== 'test',
+      watchman: process.env.NODE_ENV !== 'test' && watchman,
     });
 
-    watcher.on('ready', () => {
+    let dependenciesWatcher = null;
+
+    globWatcher.on('ready', () => {
       process.send({message: 'Reading files to be linted...[this may take a little bit]'});
-      let filePaths = [];
-      for (let i = 0; i < paths.length; i++) {
-        const files = glob.sync(paths[i], {
+      const allFiles = new Set();
+      for (const path of pathsArr) {
+        const files = glob.sync(path, {
           cwd: root,
           absolute: true,
-          ignore: ignored
+          ignore: ignoredArr,
         });
-        files.forEach((file) => {
-          filePaths.push(file);
-        });
+        files.forEach((file) => allFiles.add(file));
       }
-
+      const filePaths = [...allFiles].filter((file) => file && !eslint.isPathIgnored(file) && file.indexOf('eslint') === -1);
+      filePaths.forEach(updateDependencies);
+      updateDependenciesWatcher();
       this.lintAllFiles(filePaths);
     });
-
-    watcher.on('change', (filepath) => {
-      let filePaths = [];
-      if (filepath.indexOf('.eslintrc') !== -1) {
-        this.cache = {};
-        for (let i = 0; i < paths.length; i++) {
-          const files = glob.sync(paths[i], {
-            cwd: root,
-            absolute: true,
-            ignore: ignored
-          });
-          files.forEach((file) => {
-            filePaths.push(file);
-          });
-        }
-        this.lintAllFiles(filePaths);
-      } else {
-        this.lintFile(filepath);
+    globWatcher.on('add', (file) => {
+      if (!eslint.isPathIgnored(file) && file.indexOf('eslint') === -1) {
+        updateDependencies(file);
+        this.lintFile(file);
+        updateDependenciesWatcher();
       }
     });
-    watcher.on('add', (filepath) => {
-      this.lintFile(filepath);
-    });
-    watcher.on('delete', (filepath) => {
+    globWatcher.on('delete', (filepath) => {
       delete this.cache[filepath];
+      removeDependencies(filepath);
+      updateDependenciesWatcher();
     });
   }
 
@@ -119,27 +181,34 @@ export default class Server {
     };
   }
 
-  lintFile(file) {
+  async lintFile(file, attempt = 1) {
     if (eslint.isPathIgnored(file) || file.indexOf('eslint') !== -1) {
       return;
     }
     this.filesToProcess++;
-    const that = this;
-    this.lintRunner.run([file])
-      .then(function(results) {
-        const record = results.records[0];
-        if (record) {
-          delete record.source;
-          that.cache[record.filePath] = record;
-        }
-        that.filesToProcess--;
-      })
-      .catch(e => console.error(e));
+    delete this.cache[file];
+    try {
+      const { records: [record] } = await this.lintRunner.run([file]);
+      if (record) {
+        delete record.source;
+        this.cache[record.filePath] = record;
+      }
+      this.filesToProcess--;
+    } catch (e) {
+      console.error(`Failed to run on '${file} on attempt ${attempt} out of ${MAX_ATTEMPTS}`, e);
+      if (attempt < MAX_ATTEMPTS) {
+        await delay(250 * 2 ** attempt);
+        this.fileToProcess--;
+        // Return here so that they aren't nested and can't run out the stack space.
+        return this.lintFile(file, attempt + 1);
+      }
+      this.filesToProcess--;
+    }
   }
 
-  lintAllFiles(files) {
-    files.map((file) => {
+  async lintAllFiles(files) {
+    return Promise.all(files.map((file) => {
       this.lintFile(file);
-    });
+    }));
   }
 }

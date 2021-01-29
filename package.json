@@ -24,10 +24,12 @@
   },
   "homepage": "https://github.com/pinterest/esprint#readme",
   "dependencies": {
+    "dependency-tree": "^8.0.0",
     "fb-watchman": "^2.0.1",
     "glob": "^7.1.6",
     "jayson": "^3.3.4",
     "jest-worker": "^26.6.2",
+    "micromatch": "^4.0.2",
     "sane": "^4.1.0",
     "yargs": "^16.2.0"
   },
