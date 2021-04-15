@@ -5,7 +5,7 @@ const killProcess = require('../../killProcess.js');
 
 function writeFileContents() {
   const fileContents = `var x = 0;\nconsole.log(x);`
-  
+
   if (!fs.existsSync(path.join(__dirname, '..', 'fixture.js'))) {
     fs.writeFileSync(path.join(__dirname, '..', 'fixture.js'), fileContents);
   }

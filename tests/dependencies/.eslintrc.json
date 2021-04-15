@@ -1,0 +1,17 @@
+{
+  "plugins": [
+    "import"
+  ],
+  "rules": {
+    "no-var": 2,
+    "import/named": 2
+  },
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module"
+  },
+  "env": {
+    "es6": true
+  },
+  "root": true
+}
