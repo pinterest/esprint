@@ -1,10 +1,10 @@
-import { fork } from 'child_process';
+import { fork } from "child_process";
 
-import { isPortTaken } from '../util';
-import { clearLine } from '../cliUtils';
-import Client from '../Client';
+import { isPortTaken } from "../util";
+import { clearLine } from "../cliUtils";
+import Client from "../Client";
 
-export const connect = (options) => {
+export const connect = async (options) => {
   const args = [];
   // eslint-disable-next-line
   for (const key in options) {
@@ -13,28 +13,26 @@ export const connect = (options) => {
 
   const port = options.port;
 
-  isPortTaken(port).then((isTaken) => {
-    // start the server if it isn't running
-    const client = new Client(options);
+  const isTaken = await isPortTaken(port);
 
-    if (!isTaken) {
-      const child = fork(
-        require.resolve('../startServer.js'), args, {
-          silent: true
-        }
-      );
+  // start the server if it isn't running
+  const client = new Client(options);
 
-      child.on('message', message => {
-        if (message.server) {
-          // Wait for the server to start before connecting
-          client.connect();
-        } else if (message.message) {
-          clearLine();
-          process.stdout.write(message.message);
-        }
-      });
-    } else {
-      client.connect();
-    }
-  });
+  if (!isTaken) {
+    const child = fork(require.resolve("../startServer.js"), args, {
+      silent: true,
+    });
+
+    child.on("message", async (message) => {
+      if (message.server) {
+        // Wait for the server to start before connecting
+        await client.connect();
+      } else if (message.message) {
+        clearLine();
+        process.stdout.write(message.message);
+      }
+    });
+  } else {
+    await client.connect();
+  }
 };

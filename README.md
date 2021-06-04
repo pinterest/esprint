@@ -1,4 +1,4 @@
-# esprint - a fast eslint runner [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/pinterest/esprint/Main%20workflow%20(PR))](https://github.com/pinterest/esprint/actions?query=workflow%3A%22Main+workflow+%28PR%29%22) [![npm version](https://img.shields.io/npm/v/esprint)](https://www.npmjs.com/package/esprint)
+# esprint - a fast eslint runner [![GitHub Workflow Status](<https://img.shields.io/github/workflow/status/pinterest/esprint/Main%20workflow%20(PR)>)](https://github.com/pinterest/esprint/actions?query=workflow%3A%22Main+workflow+%28PR%29%22) [![npm version](https://img.shields.io/npm/v/esprint)](https://www.npmjs.com/package/esprint)
 
 esprint (pronounced E-S-sprint) speeds up eslint by running the linting engine across multiple threads.
 esprint sets up a server daemon to cache the lint status of each file in memory. It uses a watcher to determine when files change, to only lint files as necessary. It also has a CI mode where it does not set up a daemon and just lints in parallel.

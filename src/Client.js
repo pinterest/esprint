@@ -1,40 +1,43 @@
-import jayson from 'jayson';
-import { CLIEngine } from 'eslint';
-import { clearLine } from './cliUtils';
+import jayson from "jayson";
+import { ESLint } from "eslint";
+import { clearLine } from "./cliUtils";
 
 export default class Client {
   constructor(options) {
-    const { port, formatter, maxWarnings } = options;
-    const eslint = new CLIEngine();
-    this.port = port;
-    this.formatter = eslint.getFormatter(formatter);
-    this.maxWarnings = maxWarnings;
+    this.options = options;
+    this.eslint = new ESLint();
   }
 
-  connect() {
+  async connect() {
+    const { port, formatter, maxWarnings } = this.options;
+
     const client = jayson.client.http({
-      port: this.port
+      port,
     });
 
-    const formatter = this.formatter;
-    const maxWarnings = this.maxWarnings;
+    const eslintFormatter = await this.eslint.loadFormatter(formatter);
 
     setInterval(() => {
-      client.request('status', null, function(error, response) {
+      client.request("status", null, function (error, response) {
         if (error) {
           throw error;
         }
         const { result } = response;
         if (!result.message) {
-          console.log(formatter(result.records));
-          process.exit(result && (result.errorCount > 0 ? 1 : 0
-              || result.warningCount > maxWarnings ? 1 : 0));
+          console.log(eslintFormatter.format(result.records));
+          process.exit(
+            result &&
+              (result.errorCount > 0
+                ? 1
+                : 0 || result.warningCount > maxWarnings
+                ? 1
+                : 0)
+          );
         } else {
           clearLine();
           process.stdout.write(result.message);
         }
       });
-
-    }, 1000);
+    }, 500);
   }
 }

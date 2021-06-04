@@ -1,50 +1,50 @@
-import glob from 'glob';
-import jayson from 'jayson';
-import path from 'path';
-import sane from 'sane';
-import LintRunner from './LintRunner';
-import { CLIEngine } from 'eslint';
+import glob from "glob";
+import jayson from "jayson";
+import path from "path";
+import sane from "sane";
+import LintRunner from "./LintRunner";
+import { ESLint } from "eslint";
 
 const ROOT_DIR = process.cwd();
 
-const eslint = new CLIEngine({ cwd: ROOT_DIR });
+const eslint = new ESLint({ cwd: ROOT_DIR });
 
 export default class Server {
   constructor(options) {
-    const {
-      workers,
-      port,
-      paths,
-      ignored,
-      rcPath,
-      quiet,
-      fix
-    } = options;
+    const { workers, port, paths, ignored, rcPath, quiet, fix } = options;
 
     this.port = port;
     this.rcPath = rcPath;
 
     this.cache = {};
     this.filesToProcess = 0;
-    this.lintRunner = new LintRunner(workers, !!quiet, fix);
+    this.initializing = true;
+    this.lintRunner = new LintRunner(workers, !!quiet, fix === "true");
 
     const rootDir = path.dirname(this.rcPath);
 
-    this._setupWatcher(rootDir, paths.split(','), ignored.split(','));
+    this._setupWatcher(rootDir, paths.split(","), ignored.split(","));
 
     const that = this;
 
     const server = jayson.server({
-      status: function(args, cb) {
-        if (that.filesToProcess === 0) {
+      status: function (args, cb) {
+        if (that.initializing) {
+          cb(null, {
+            message: `Initializing`,
+          });
+        } else if (that.filesToProcess === 0) {
           cb(null, that.getResultsFromCache());
         } else {
-          cb(null, {message: `Linting...${that.filesToProcess} left to lint`});
+          const { errorCount, warningCount } = that.getResultsFromCache();
+          cb(null, {
+            message: `Linting...${that.filesToProcess} left to lint. Errors: ${errorCount} / Warnings: ${warningCount}`,
+          });
         }
-      }
+      },
     });
 
-    process.send({server: server});
+    process.send({ server: server });
 
     server.http().listen(this.port);
   }
@@ -54,63 +54,74 @@ export default class Server {
       glob: paths,
       ignored: ignored,
       dot: true,
-      watchman: process.env.NODE_ENV !== 'test',
+      watchman: false,
     });
 
-    watcher.on('ready', () => {
-      process.send({message: 'Reading files to be linted...[this may take a little bit]'});
+    watcher.on("ready", async () => {
+      this.initializing = false;
+      process.send({
+        message: "Reading files to be linted...[this may take a little bit]",
+      });
       let filePaths = [];
       for (let i = 0; i < paths.length; i++) {
         const files = glob.sync(paths[i], {
           cwd: root,
           absolute: true,
-          ignore: ignored
+          ignore: ignored,
         });
         files.forEach((file) => {
           filePaths.push(file);
         });
       }
 
-      this.lintAllFiles(filePaths);
+      await this.lintAllFiles(filePaths);
     });
 
-    watcher.on('change', (filepath) => {
+    watcher.on("change", async (filepath) => {
       let filePaths = [];
-      if (filepath.indexOf('.eslintrc') !== -1) {
+      if (filepath.indexOf(".eslintrc") !== -1) {
         this.cache = {};
         for (let i = 0; i < paths.length; i++) {
           const files = glob.sync(paths[i], {
             cwd: root,
             absolute: true,
-            ignore: ignored
+            ignore: ignored,
           });
           files.forEach((file) => {
             filePaths.push(file);
           });
         }
-        this.lintAllFiles(filePaths);
+        await this.lintAllFiles(filePaths);
       } else {
-        this.lintFile(filepath);
+        await this.lintFile(filepath);
       }
     });
-    watcher.on('add', (filepath) => {
-      this.lintFile(filepath);
+    watcher.on("add", async (filepath) => {
+      await this.lintFile(filepath);
     });
-    watcher.on('delete', (filepath) => {
+    watcher.on("delete", (filepath) => {
       delete this.cache[filepath];
     });
   }
 
   getResultsFromCache() {
-    const records = Object.keys(this.cache).filter(filepath => {
-      return this.cache[filepath] &&
-        (this.cache[filepath].errorCount > 0 || this.cache[filepath].warningCount > 0);
-    }).map(filepath => this.cache[filepath]);
+    const records = Object.keys(this.cache)
+      .filter((filepath) => {
+        return (
+          this.cache[filepath] &&
+          (this.cache[filepath].errorCount > 0 ||
+            this.cache[filepath].warningCount > 0)
+        );
+      })
+      .map((filepath) => this.cache[filepath]);
 
-    const { errorCount, warningCount } = records.reduce((a, b) => ({
-      errorCount: a.errorCount + b.errorCount,
-      warningCount: a.warningCount + b.warningCount,
-    }), { errorCount: 0, warningCount: 0 });
+    const { errorCount, warningCount } = records.reduce(
+      (a, b) => ({
+        errorCount: a.errorCount + b.errorCount,
+        warningCount: a.warningCount + b.warningCount,
+      }),
+      { errorCount: 0, warningCount: 0 }
+    );
 
     return {
       records,
@@ -119,27 +130,30 @@ export default class Server {
     };
   }
 
-  lintFile(file) {
-    if (eslint.isPathIgnored(file) || file.indexOf('eslint') !== -1) {
+  async lintFile(file) {
+    if ((await eslint.isPathIgnored(file)) || file.indexOf("eslint") !== -1) {
       return;
     }
     this.filesToProcess++;
     const that = this;
-    this.lintRunner.run([file])
-      .then(function(results) {
-        const record = results.records[0];
-        if (record) {
-          delete record.source;
-          that.cache[record.filePath] = record;
-        }
-        that.filesToProcess--;
-      })
-      .catch(e => console.error(e));
+    try {
+      const results = await this.lintRunner.run([file]);
+      const record = results.records[0];
+      if (record) {
+        delete record.source;
+        that.cache[record.filePath] = record;
+      }
+      that.filesToProcess--;
+    } catch (e) {
+      console.error(e);
+    }
   }
 
-  lintAllFiles(files) {
-    files.map((file) => {
-      this.lintFile(file);
-    });
+  async lintAllFiles(files) {
+    await Promise.all(
+      files.map(async (file) => {
+        await this.lintFile(file);
+      })
+    );
   }
 }
