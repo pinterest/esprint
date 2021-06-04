@@ -1,10 +1,10 @@
-import { readFileSync } from 'fs';
-import { execSync } from 'child_process';
+import { readFileSync } from "fs";
+import { execSync } from "child_process";
 
-import { findFile } from '../util.js';
+import { findFile } from "../util.js";
 
 export const stop = () => {
-  const filePath = findFile('.esprintrc');
+  const filePath = findFile(".esprintrc");
   const rc = JSON.parse(readFileSync(filePath));
 
   if (rc.port) {
@@ -12,7 +12,7 @@ export const stop = () => {
     const command = `kill -9 $(lsof -t -i tcp:${port})`;
     try {
       execSync(command, {
-        stdio: 'ignore'
+        stdio: "ignore",
       });
     } catch (error) {
       console.log(`No server runs on port ${port}`);
@@ -20,6 +20,6 @@ export const stop = () => {
     }
     console.log(`Server running on port ${port} found and stopped`);
   } else {
-    console.warn('No port specified in `.esprintrc` file');
+    console.warn("No port specified in `.esprintrc` file");
   }
 };

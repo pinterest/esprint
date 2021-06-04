@@ -1,9 +1,9 @@
-import glob from 'glob';
-import path from 'path';
-import { CLIEngine } from 'eslint';
-import LintRunner from '../LintRunner';
+import glob from "glob";
+import path from "path";
+import { ESLint } from "eslint";
+import LintRunner from "../LintRunner";
 
-export const check = (options) => {
+export const check = async (options) => {
   const {
     workers,
     paths,
@@ -12,28 +12,43 @@ export const check = (options) => {
     rcPath,
     maxWarnings,
     quiet,
-    fix
+    fix,
   } = options;
 
   const lintRunner = new LintRunner(workers, !!quiet, fix);
   const rcDir = path.dirname(rcPath);
-  const eslint = new CLIEngine({ cwd: rcDir });
+  const eslint = new ESLint({ cwd: rcDir });
 
-  const filePaths = (paths.map(globPath => glob.sync(globPath, { cwd: rcDir, absolute: true, ignore: ignored })) || []).flat();
+  const filePaths = (
+    paths.map((globPath) =>
+      glob.sync(globPath, { cwd: rcDir, absolute: true, ignore: ignored })
+    ) || []
+  ).flat();
   // filter out the files that we tell eslint to ignore
-  const nonIgnoredFilePaths = filePaths.filter((filePath) => {
-    return !(eslint.isPathIgnored(filePath) || filePath.indexOf('eslint') !== -1);
+  const nonIgnoredFilePaths = (
+    await Promise.all(
+      filePaths.map(async (filePath) => {
+        return (await eslint.isPathIgnored(filePath)) ||
+          filePath.indexOf("eslint") !== -1
+          ? null
+          : filePath;
+      })
+    )
+  ).filter(Boolean);
+
+  const results = await lintRunner.run(nonIgnoredFilePaths);
+  const records = results.records.filter((record) => {
+    return record.warningCount > 0 || record.errorCount > 0;
   });
 
-  lintRunner.run(nonIgnoredFilePaths)
-    .then((results) => {
-      const records = results.records.filter((record) => {
-        return record.warningCount > 0 || record.errorCount > 0;
-      });
-
-      const lintFormatter = eslint.getFormatter(formatter);
-      console.log(lintFormatter(records));
-      process.exit(results && (results.errorCount > 0 ? 1 : 0
-        || results.warningCount > maxWarnings ? 1 : 0));
-    });
+  const lintFormatter = await eslint.loadFormatter(formatter);
+  console.log(lintFormatter.format(records));
+  process.exit(
+    results &&
+      (results.errorCount > 0
+        ? 1
+        : 0 || results.warningCount > maxWarnings
+        ? 1
+        : 0)
+  );
 };

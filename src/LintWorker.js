@@ -1,22 +1,17 @@
-import { CLIEngine } from 'eslint';
+import { ESLint } from "eslint";
 
-const lintFile = (fileArg, fix) => {
+const lintFile = async (fileArg, fix) => {
   if (!Array.isArray(fileArg)) {
     fileArg = [fileArg];
   }
-  const eslint = new CLIEngine({ cwd: process.cwd(), fix });
-  const report = eslint.executeOnFiles(fileArg);
-  CLIEngine.outputFixes(report);
-  return report.results;
+
+  const eslint = new ESLint({ cwd: process.cwd(), fix });
+  const report = await eslint.lintFiles(fileArg);
+  await ESLint.outputFixes(report);
+  return report;
 };
 
-export async function worker({
-  fileArg,
-  fix,
-  suppressWarnings
-}) {
-  return new Promise((resolve) => {
-    const results = lintFile(fileArg, fix);
-    resolve(suppressWarnings ? CLIEngine.getErrorResults(results) : results);
-  });
+export async function worker({ fileArg, fix, suppressWarnings }) {
+  const results = await lintFile(fileArg, fix);
+  return suppressWarnings ? ESLint.getErrorResults(results) : results;
 }
