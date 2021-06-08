@@ -18,16 +18,14 @@ A sample `.esprintrc` file:
 
 Options:
 
-|        Name        |       Type        | Description                                                                                                       |
-| :----------------: | :---------------: | :---------------------------------------------------------------------------------------------------------------- |
-|    **`paths`**     | `{Array<String>}` | Glob-style paths for files to include when linting                                                                |
-|   **`ignored`**    | `{Array<String>}` | Glob-style paths to ignore (not watch) during dev mode for better performance (`.eslintignore` applies as normal) |
-|     **`port`**     |    `{Number}`     | (optional) Run the esprint background server on a specific port                                                   |
-|  **`formatter`**   |    `{string}`     | (optional) Use a specific output format - default: stylish                                                        |
-|    **`quiet`**     |    `{boolean}`    | (optional) Report errors only - default: false                                                                    |
-| **`maxWarnings`**  |    `{number}`     | (optional) The max number of warnings that should trigger a failure. The default is to not fail on warnings       |
-| **`esprintDebug`** |    `{boolean}`    | (optional) Print debug output for esrpint. Should only be used when you're running into issues                    |
-|  **`noWatchman`**  |    `{boolean}`    | (optional) Disable watchman                                                                                       |
+|       Name        |       Type        | Description                                                                                                       |
+| :---------------: | :---------------: | :---------------------------------------------------------------------------------------------------------------- |
+|    **`paths`**    | `{Array<String>}` | Glob-style paths for files to include when linting                                                                |
+|   **`ignored`**   | `{Array<String>}` | Glob-style paths to ignore (not watch) during dev mode for better performance (`.eslintignore` applies as normal) |
+|    **`port`**     |    `{Number}`     | (optional) Run the esprint background server on a specific port                                                   |
+|  **`formatter`**  |    `{string}`     | (optional) Use a specific output format - default: stylish                                                        |
+|    **`quiet`**    |    `{boolean}`    | (optional) Report errors only - default: false                                                                    |
+| **`maxWarnings`** |    `{number}`     | (optional) The max number of warnings that should trigger a failure. The default is to not fail on warnings       |
 
 ## Usage
 
@@ -36,7 +34,7 @@ Options:
 To run esprint, use the following command anywhere in your project:
 
 ```
-$ esprint
+esprint
 ```
 
 esprint will find the root of your project automatically and lint the whole project. In default mode, esprint will start a background server to watch source files and cache lint results in memory.
@@ -44,13 +42,13 @@ esprint will find the root of your project automatically and lint the whole proj
 By default, esprint will split up linting duties across all CPUs in your machine. You can manually override this via the cli with the following argument:
 
 ```
-$ esprint --workers=[num_workers]
+esprint --workers=[num_workers]
 ```
 
 To kill the esprint server in the background & clear the cache, use the following command:
 
 ```
-$ esprint stop
+esprint stop
 ```
 
 You can run `esprint` from any subdirectory that `.esprintrc` is located in, and it will still properly lint all files as specified.
@@ -60,7 +58,7 @@ You can run `esprint` from any subdirectory that `.esprintrc` is located in, and
 In CI environments, it is not always appropriate (or necessary) to start a background server. In this case, you can use the following command, which simply lints in parallel without setting up a background server:
 
 ```
-$ esprint check
+esprint check
 ```
 
 ### CLI Options
@@ -70,13 +68,27 @@ $ esprint check
 To use the eslint auto fix feature, add `--fix` when starting the server
 
 ```
-$ esprint --fix
+esprint --fix
 ```
 
 or when running in CI mode
 
 ```
-$ esprint check --fix
+esprint check --fix
+```
+
+#### Debug
+
+Print debug output for esrpint. Should only be used when you're running into issues
+
+```
+esprint --esprintDebug
+```
+
+#### Disable watchman
+
+```
+esprint --noWatchman
 ```
 
 ## Developing for esprint
