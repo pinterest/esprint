@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/pinterest/esprint#readme",
   "dependencies": {
+    "fb-watchman": "^2.0.1",
     "glob": "^7.1.7",
     "jayson": "^3.6.3",
     "jest-worker": "^27.0.2",
@@ -42,8 +43,8 @@
   "devDependencies": {
     "@babel/cli": "^7.14.3",
     "@babel/core": "^7.14.3",
-    "@babel/preset-env": "^7.14.4",
     "@babel/eslint-parser": "^7.14.4",
+    "@babel/preset-env": "^7.14.4",
     "babel-jest": "^27.0.2",
     "chalk": "^4.1.1",
     "eslint": "7.15.0",
