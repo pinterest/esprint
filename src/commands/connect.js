@@ -20,7 +20,7 @@ export const connect = async (options) => {
 
   if (!isTaken) {
     const child = fork(require.resolve("../startServer.js"), args, {
-      silent: true,
+      silent: options.esprintDebug ? false : true,
     });
 
     child.on("message", async (message) => {

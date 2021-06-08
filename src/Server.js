@@ -11,7 +11,8 @@ const eslint = new ESLint({ cwd: ROOT_DIR });
 
 export default class Server {
   constructor(options) {
-    const { workers, port, paths, ignored, rcPath, quiet, fix } = options;
+    const { workers, port, paths, ignored, rcPath, quiet, fix, noWatchman } =
+      options;
 
     this.port = port;
     this.rcPath = rcPath;
@@ -20,6 +21,7 @@ export default class Server {
     this.filesToProcess = 0;
     this.initializing = true;
     this.lintRunner = new LintRunner(workers, !!quiet, fix === "true");
+    this.noWatchman = noWatchman;
 
     const rootDir = path.dirname(this.rcPath);
 
@@ -54,7 +56,7 @@ export default class Server {
       glob: paths,
       ignored: ignored,
       dot: true,
-      watchman: false,
+      watchman: this.noWatchman ? false : true,
     });
 
     watcher.on("ready", async () => {

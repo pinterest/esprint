@@ -46,6 +46,12 @@ const getEsprintOptions = (argv) => {
     if (argv.fix) {
       Object.assign(options, { fix: true });
     }
+    if (argv.esprintDebug) {
+      Object.assign(options, { esprintDebug: true });
+    }
+    if (argv.noWatchman) {
+      Object.assign(options, { noWatchman: argv.noWatchman });
+    }
 
     // NB: Passing --quiet as a number for compatibility with yargs
     options.quiet = options.quiet || argv.quiet ? 1 : 0;
@@ -59,6 +65,9 @@ const usage = `Spins up a server on a specified port to run eslint in parallel.
 
 yargs
   .usage(usage)
+  .parserConfiguration({
+    "boolean-negation": false,
+  })
   .command(
     "stop",
     "Stops running the background server",

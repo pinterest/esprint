@@ -18,14 +18,16 @@ A sample `.esprintrc` file:
 
 Options:
 
-|       Name        |       Type        | Description                                                                                                       |
-| :---------------: | :---------------: | :---------------------------------------------------------------------------------------------------------------- |
-|    **`paths`**    | `{Array<String>}` | Glob-style paths for files to include when linting                                                                |
-|   **`ignored`**   | `{Array<String>}` | Glob-style paths to ignore (not watch) during dev mode for better performance (`.eslintignore` applies as normal) |
-|    **`port`**     |    `{Number}`     | (optional) Run the esprint background server on a specific port                                                   |
-|  **`formatter`**  |    `{string}`     | (optional) Use a specific output format - default: stylish                                                        |
-|    **`quiet`**    |    `{boolean}`    | (optional) Report errors only - default: false                                                                    |
-| **`maxWarnings`** |    `{number}`     | (optional) The max number of warnings that should trigger a failure. The default is to not fail on warnings       |
+|        Name        |       Type        | Description                                                                                                       |
+| :----------------: | :---------------: | :---------------------------------------------------------------------------------------------------------------- |
+|    **`paths`**     | `{Array<String>}` | Glob-style paths for files to include when linting                                                                |
+|   **`ignored`**    | `{Array<String>}` | Glob-style paths to ignore (not watch) during dev mode for better performance (`.eslintignore` applies as normal) |
+|     **`port`**     |    `{Number}`     | (optional) Run the esprint background server on a specific port                                                   |
+|  **`formatter`**   |    `{string}`     | (optional) Use a specific output format - default: stylish                                                        |
+|    **`quiet`**     |    `{boolean}`    | (optional) Report errors only - default: false                                                                    |
+| **`maxWarnings`**  |    `{number}`     | (optional) The max number of warnings that should trigger a failure. The default is to not fail on warnings       |
+| **`esprintDebug`** |    `{boolean}`    | (optional) Print debug output for esrpint. Should only be used when you're running into issues                    |
+|  **`noWatchman`**  |    `{boolean}`    | (optional) Disable watchman                                                                                       |
 
 ## Usage
 
