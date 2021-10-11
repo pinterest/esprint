@@ -79,7 +79,7 @@ esprint check --fix
 
 #### Debug
 
-Print debug output for esrpint. Should only be used when you're running into issues
+Print debug output for esprint. Should only be used when you're running into issues
 
 ```
 esprint --esprintDebug
