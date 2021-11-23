@@ -26,7 +26,7 @@
   "dependencies": {
     "fb-watchman": "^2.0.1",
     "glob": "^7.1.7",
-    "jayson": "^3.6.3",
+    "jayson": "^3.6.5",
     "jest-worker": "^27.0.2",
     "sane": "^4.1.0",
     "yargs": "^17.0.1"
