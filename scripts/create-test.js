@@ -3,14 +3,13 @@
 
 const path = require("path");
 const fs = require("fs");
-const chalk = require("chalk");
 const argv = require("yargs").argv;
 
 const testName = argv._[0];
 const testFile = `${testName}.test.js`;
 const testFolder = `__tests__`;
 
-const imports = ` 
+const imports = `
 const path = require('path');
 const runEsprint = require('../../runEsprint.js');
 const killProcess = require('../../killProcess.js');
@@ -84,5 +83,5 @@ Object.keys(files).forEach((file) => {
   fs.writeFileSync(path.join(folder, name), content);
 });
 
-console.log(chalk.green(`Successfully created ${testName} test sub-folder!`));
-console.log(chalk.green(`You can find it under tests/${testName}.`));
+console.log(`Successfully created ${testName} test sub-folder!`);
+console.log(`You can find it under tests/${testName}.`);
