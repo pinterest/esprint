@@ -70,6 +70,7 @@ export default class Server {
           cwd: root,
           absolute: true,
           ignore: ignored,
+          nodir: true,
         });
         files.forEach((file) => {
           filePaths.push(file);
@@ -88,6 +89,7 @@ export default class Server {
             cwd: root,
             absolute: true,
             ignore: ignored,
+            nodir: true,
           });
           files.forEach((file) => {
             filePaths.push(file);
