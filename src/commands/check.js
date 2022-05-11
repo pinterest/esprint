@@ -21,7 +21,7 @@ export const check = async (options) => {
 
   const filePaths = (
     paths.map((globPath) =>
-      glob.sync(globPath, { cwd: rcDir, absolute: true, ignore: ignored })
+      glob.sync(globPath, { cwd: rcDir, absolute: true, ignore: ignored, nodir: true })
     ) || []
   ).flat();
   // filter out the files that we tell eslint to ignore
