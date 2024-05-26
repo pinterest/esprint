@@ -34,7 +34,7 @@
   "homepage": "https://github.com/pinterest/esprint#readme",
   "dependencies": {
     "fb-watchman": "^2.0.1",
-    "glob": "^7.2.0",
+    "glob": "^9.0.0",
     "jayson": "^3.6.6",
     "jest-worker": "^27.4.6",
     "sane": "^5.0.1",
