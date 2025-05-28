@@ -38,7 +38,7 @@
     "jayson": "^3.6.6",
     "jest-worker": "^27.4.6",
     "sane": "^5.0.1",
-    "yargs": "^17.3.1"
+    "yargs": "^18.0.0"
   },
   "peerDependencies": {
     "eslint": ">=7"
